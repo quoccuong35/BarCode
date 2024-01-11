@@ -1,0 +1,374 @@
+﻿@{
+    var nguoidung = WMS.Models.Users.GetNguoiDung(User.Identity.Name);
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="">
+    <meta name="robots" content="index, follow" />
+    <link rel="icon" type="image/png" href="~/Content/upload/images/favicon.png" />
+    <title>@ViewBag.Title - @Resources.Main.TenWeb</title>
+    @Styles.Render("~/Content/css/extreme")
+    @Styles.Render("~/Content/css/site")
+    @RenderSection("CSSFile", required: false)
+</head>
+<body class="nk-body bg-lighter npc-general has-sidebar ">
+    @Html.AntiForgeryToken()
+    <div class="nk-app-root">
+        <div class="nk-main ">
+            <div class="nk-sidebar nk-sidebar-fixed is-theme " data-content="sidebarMenu">
+                <div class="nk-sidebar-element nk-sidebar-head">
+                    <div class="nk-sidebar-brand">
+                        <a href="~/" class="logo-link nk-sidebar-logo">
+                            <img class="logo-light logo-img" src="~/Content/upload/images/favicon.png" srcset="~/Content/upload/images/favicon.png 2x" alt="@Resources.Main.TenWeb">
+                            <span class="nk-block-title logo-title">Burden Furniture</span>      <img class="logo-dark logo-img" src="~/Content/upload/images/favicon.png" srcset="~/Content/upload/images/favicon.png 2x" alt="@Resources.Main.TenWeb">
+                            <img class="logo-small logo-img logo-img-small" src="~/Content/upload/images/favicon.png" srcset="~/Content/upload/images/favicon.png 2x" alt="@Resources.Main.TenWeb">
+
+                        </a>
+                    </div>
+                    <div class="nk-menu-trigger mr-n2">
+                        <a href="#" class="nk-nav-toggle nk-quick-nav-icon d-xl-none" data-target="sidebarMenu">
+                            <em class="icon ni ni-arrow-left"></em>
+                        </a>
+                        <a href="#" class="nk-nav-compact nk-quick-nav-icon d-none d-xl-inline-flex" data-target="sidebarMenu">
+                            <em class="icon ni ni-menu">
+                            </em>
+                        </a>
+                    </div>
+                </div>
+                <div class="nk-sidebar-element">
+                    <div class="nk-sidebar-content">
+                        <div class="nk-sidebar-menu" data-simplebar>
+                            <ul class="nk-menu">
+                                <li class="nk-menu-item">
+
+                                    @if (User.IsInRole("0") || User.IsInRole("23=1") || User.IsInRole("1=1") || User.IsInRole("2=1") || User.IsInRole("5=1") || User.IsInRole("4=1") || User.IsInRole("1=6"))
+                                    {
+                                    <li class="nk-menu-heading">
+                                        <h6 class="overline-title text-primary-alt">Nhập kho</h6>
+                                    </li>
+                                    if (User.IsInRole("0") || User.IsInRole("1=1"))
+                                    {
+                                        <li class="nk-menu-item"><a href="@Url.Action("Index", "PurchaseOrder")" class="nk-menu-link"><span class="nk-menu-icon"><em class="icon ni ni-file-docs"></em></span><span class="nk-menu-text">@Resources.Main.DonDatHang (WSO)</span></a></li>
+                                    }
+                                    if (User.IsInRole("0") || User.IsInRole("1=6"))
+                                    {
+                                        <li class="nk-menu-item"><a href="@Url.Action("InQRCode1", "PurchaseOrder")" class="nk-menu-link"><span class="nk-menu-icon"><em class="icon ni ni-printer"></em></span><span class="nk-menu-text">@Resources.Menu.QRCode1</span></a></li>
+                                    }
+                                    if (User.IsInRole("0") || User.IsInRole("23=1"))
+                                    {
+                                        <li class="nk-menu-item"><a href="@Url.Action("InQRCode1TuChon", "PurchaseOrder")" class="nk-menu-link"><span class="nk-menu-icon"><em class="icon ni ni-printer"></em></span><span class="nk-menu-text">@Resources.Menu.QRCode1TuChon</span></a></li>
+                                    }
+                                    if (User.IsInRole("0") || User.IsInRole("2=1"))
+                                    {
+                                        <li class="nk-menu-item"><a href="@Url.Action("Index", "PhieuNhapHang")" class="nk-menu-link"><span class="nk-menu-icon"><em class="icon ni ni-file-check"></em></span><span class="nk-menu-text">@Resources.Menu.PhieuNhapHang</span></a></li>
+                                    }
+                                    if (User.IsInRole("0") || User.IsInRole("1=6"))
+                                    {
+                                        <li class="nk-menu-item"><a href="@Url.Action("XuatFileCIRS", "PhieuNhapHang")" class="nk-menu-link"><span class="nk-menu-icon"><em class="icon ni ni-file-check"></em></span><span class="nk-menu-text">@Resources.Menu.XuatFileCIRS</span></a></li>
+                                    }
+                                    if (User.IsInRole("0") || User.IsInRole("5=1"))
+                                    {
+                                        <li class="nk-menu-item"><a href="@Url.Action("BaoCaoTheoDoiNhapHangTrang", "BaoCao")" class="nk-menu-link"><span class="nk-menu-icon"><em class="icon ni ni-eye-fill"></em></span><span class="nk-menu-text">@Resources.Menu.BaoCaoNhapHang</span></a></li>
+                                    }
+                                    if (User.IsInRole("0") || User.IsInRole("4=3"))
+                                    {
+                                        <li class="nk-menu-item"><a href="@Url.Action("Index", "ChuyenKe")" class="nk-menu-link"><span class="nk-menu-icon"><em class="icon ni ni-piority-fill"></em></span><span class="nk-menu-text">@Resources.Menu.ChuyenKe</span></a></li>
+                                    }
+                                    if (User.IsInRole("0") || User.IsInRole("4=1"))
+                                    {
+                                        <li class="nk-menu-item"><a href="@Url.Action("LichSuChuyenKe", "ChuyenKe")" class="nk-menu-link"><span class="nk-menu-icon"><em class="icon ni ni-histroy"></em></span><span class="nk-menu-text">@Resources.Menu.LichSuChuyenKe</span></a></li>
+                                    }
+                                    if (User.IsInRole("0") || User.IsInRole("16=1"))
+                                    {
+                                        <li class="nk-menu-item"><a href="@Url.Action("BaoCaoTheoDoiNhapKeThanhPham", "BaoCao")" class="nk-menu-link"><span class="nk-menu-icon"><em class="icon ni ni-dot-box"></em></span><span class="nk-menu-text">@Resources.Menu.TheoDoiNhapKeThanhPham</span></a></li>
+                                    }
+                                    if (User.IsInRole("0") || User.IsInRole("18=3"))
+                                    {
+                                        <li class="nk-menu-item"><a href="@Url.Action("ChuyenKeThanhPham", "ChuyenKe")" class="nk-menu-link"><span class="nk-menu-icon"><em class="icon ni ni-piority-fill"></em></span><span class="nk-menu-text">@Resources.Menu.ChuyenKeThanhPham</span></a></li>
+                                    }
+                                    if (User.IsInRole("0") || User.IsInRole("18=1"))
+                                    {
+                                        <li class="nk-menu-item"><a href="@Url.Action("LichSuChuyenKeThanhPham", "ChuyenKe")" class="nk-menu-link"><span class="nk-menu-icon"><em class="icon ni ni-histroy"></em></span><span class="nk-menu-text">@Resources.Menu.LichSuChuyenKeThanhPham</span></a></li>
+
+                                    }
+                                }
+                                    @if (User.IsInRole("0") || User.IsInRole("6=1") || User.IsInRole("8=1"))
+                                    {
+                                        <li class="nk-menu-heading">
+                                            <h6 class="overline-title text-primary-alt">Xuất kho</h6>
+                                        </li>
+                                        if (User.IsInRole("0") || User.IsInRole("6=1"))
+                                        {
+                                            <li class="nk-menu-item"><a href="@Url.Action("BaoCaoXuatKeHangTrang", "BaoCao")" class="nk-menu-link"><span class="nk-menu-icon"><em class="icon ni ni-minus-round-fill"></em></span><span class="nk-menu-text">@Resources.Menu.PhieuXuatKeHangTrang</span></a></li>
+                                            <li class="nk-menu-item"><a href="@Url.Action("Index", "HangTrang")" class="nk-menu-link"><span class="nk-menu-icon"><em class="icon ni ni-file-docs"></em></span><span class="nk-menu-text">@Resources.Menu.LichSuXuatKeHangTrang</span></a></li>
+                                        }
+                                        if (User.IsInRole("0") || User.IsInRole("8=1"))
+                                        {
+                                            <li class="nk-menu-item"><a href="@Url.Action("XuatFileCLS", "BaoCao")" class="nk-menu-link"><span class="nk-menu-icon"><em class="icon ni ni-file-docs"></em></span><span class="nk-menu-text">@Resources.Menu.XuatFileCLS</span></a></li>
+                                        }
+                                        if (User.IsInRole("0") || User.IsInRole("17=1"))
+                                        {
+                                            <li class="nk-menu-item"><a href="@Url.Action("BaoCaoTheoDoiXuatKeThanhPham", "BaoCao")" class="nk-menu-link"><span class="nk-menu-icon"><em class="icon ni ni-file-docs"></em></span><span class="nk-menu-text">@Resources.Menu.TheoDoiXuatKeThanhPham</span></a></li>
+
+                                        }
+
+                                    }
+
+                                    @if (User.IsInRole("0") || User.IsInRole("3=1") || User.IsInRole("3=6") || User.IsInRole("19=1") || User.IsInRole("24=1"))
+                                    {
+                                        <li class="nk-menu-heading">
+                                            <h6 class="overline-title text-primary-alt">Sản xuất</h6>
+                                        </li>
+                                        if (User.IsInRole("0") || User.IsInRole("3=1"))
+                                        {
+                                            <li class="nk-menu-item"><a href="@Url.Action("Index", "LenhRaiHang")" class="nk-menu-link"><span class="nk-menu-icon"><em class="icon ni ni-file-docs"></em></span><span class="nk-menu-text">@Resources.Menu.LenhRaiHang</span></a></li>
+                                        }
+                                        if (User.IsInRole("0") || User.IsInRole("3=6"))
+                                        {
+                                            <li class="nk-menu-item"><a href="@Url.Action("InMauQRCode2", "LenhRaiHang")" class="nk-menu-link"><span class="nk-menu-icon"><em class="icon ni ni-printer"></em></span><span class="nk-menu-text">@Resources.Menu.QRCode2</span></a></li>
+                                        }
+                                        if (User.IsInRole("0") || User.IsInRole("24=1"))
+                                        {
+                                            <li class="nk-menu-item"><a href="@Url.Action("InMauQRCode2TuChon", "LenhRaiHang")" class="nk-menu-link"><span class="nk-menu-icon"><em class="icon ni ni-printer"></em></span><span class="nk-menu-text">@Resources.Menu.QRCode2TuChon</span></a></li>
+                                        }
+
+                                        if (User.IsInRole("0") || User.IsInRole("19=1"))
+                                        {
+                                            <li class="nk-menu-item"><a href="@Url.Action("LichSuQuetSanXuat", "LenhRaiHang")" class="nk-menu-link"><span class="nk-menu-icon"><em class="icon ni ni-share-fill"></em></span><span class="nk-menu-text">@Resources.Menu.LichSuQuetSanXuat</span></a></li>
+                                        }
+                                    }
+                                    @if (User.IsInRole("0") || User.IsInRole("13=1") || User.IsInRole("14=1") || User.IsInRole("7=1") || User.IsInRole("15=1") || User.IsInRole("21=1") || User.IsInRole("22=1"))
+                                    {
+                                        <li class="nk-menu-heading">
+                                            <h6 class="overline-title text-primary-alt">Báo Cáo</h6>
+                                        </li>
+                                        if (User.IsInRole("0") || User.IsInRole("7=1"))
+                                        {
+                                            <li class="nk-menu-item"><a href="@Url.Action("BaoCaoTienDoTrongSanXuat", "BaoCao")" class="nk-menu-link"><span class="nk-menu-icon"><em class="icon ni ni-task"></em></span><span class="nk-menu-text">@Resources.Menu.ThongTinTienDoSanXuat</span></a></li>
+                                        }
+                                        if (User.IsInRole("0") || User.IsInRole("15=1"))
+                                        {
+                                            <li class="nk-menu-item"><a href="@Url.Action("BaoCaoTienDoTrongSanXuatChiTiet", "BaoCao")" class="nk-menu-link"><span class="nk-menu-icon"><em class="icon ni ni-file-docs"></em></span><span class="nk-menu-text">@Resources.Menu.ThongTinTienDoSanXuatChiTiet</span></a></li>
+                                        }
+                                        if (User.IsInRole("0") || User.IsInRole("14=1"))
+                                        {
+                                            <li class="nk-menu-item"><a href="@Url.Action("BaoCaoTheoDoiKeHangTrang", "BaoCao")" class="nk-menu-link"><span class="nk-menu-icon"><em class="icon ni ni-growth"></em></span><span class="nk-menu-text">@Resources.Menu.TongHopKeHangTrang</span></a></li>
+                                        }
+                                        if (User.IsInRole("0") || User.IsInRole("13=1"))
+                                        {
+                                            <li class="nk-menu-item"><a href="@Url.Action("BaoCaoTheoDoiKeThanhPham", "BaoCao")" class="nk-menu-link"><span class="nk-menu-icon"><em class="icon ni ni-activity-round-fill"></em></span><span class="nk-menu-text">@Resources.Menu.TongHopKeThanhPham</span></a></li>
+                                        }
+                                        if (User.IsInRole("0") || User.IsInRole("20=1"))
+                                        {
+                                            <li class="nk-menu-item"><a href="@Url.Action("BaoCaoTongTonTheoSKU", "BaoCao")" class="nk-menu-link"><span class="nk-menu-icon"><em class="icon ni ni-pie"></em></span><span class="nk-menu-text">@Resources.Menu.TongTonTheoMaSKU</span></a></li>
+                                        }
+                                        if (User.IsInRole("0") || User.IsInRole("21=1"))
+                                        {
+                                            <li class="nk-menu-item"><a href="@Url.Action("BaoCaoChiTietHangThanhPhamTrongKho", "BaoCao")" class="nk-menu-link"><span class="nk-menu-icon"><em class="icon ni ni-file-docs"></em></span><span class="nk-menu-text">@Resources.Menu.ThanhPhamChiTiet</span></a></li>
+                                        }
+                                        if (User.IsInRole("0") || User.IsInRole("22=1"))
+                                        {
+                                            <li class="nk-menu-item"><a href="@Url.Action("BaoCaoChiTietKhoHangTrang", "BaoCao")" class="nk-menu-link"><span class="nk-menu-icon"><em class="icon ni ni-coins"></em></span><span class="nk-menu-text">@Resources.Menu.HangTrangChiTiet</span></a></li>
+                                            <li class="nk-menu-item"><a href="@Url.Action("BaoCaoTrangThaiSanXuatQRCode", "BaoCao")" class="nk-menu-link"><span class="nk-menu-icon"><em class="icon ni ni-activity-round-fill"></em></span><span class="nk-menu-text">@Resources.Menu.TinhTrangQR2SanXuat</span></a></li>
+                                        }
+
+                                    }
+                                    @if (User.IsInRole("0") || User.IsInRole("11=1") || User.IsInRole("12=1"))
+                                    {
+                                        <li class="nk-menu-heading">
+                                            <h6 class="overline-title text-primary-alt">Hệ thống</h6>
+                                        </li>
+                                        if (User.IsInRole("0"))
+                                        {
+                                            <li class="nk-menu-item"><a href="@Url.Action("QuanLyNguoiDung", "HeThong")" class="nk-menu-link"><span class="nk-menu-icon"><em class="icon ni ni-user-alt"></em></span><span class="nk-menu-text">@Resources.Menu.QuanLyNguoiDung</span></a></li>
+                                        }
+                                        if (User.IsInRole("0"))
+                                        {
+                                            <li class="nk-menu-item"><a href="@Url.Action("QuanLyNhomNguoiDung", "HeThong")" class="nk-menu-link"><span class="nk-menu-icon"><em class="icon ni ni-users"></em></span><span class="nk-menu-text">@Resources.Menu.NhomNguoiDung</span></a></li>
+                                        }
+                                        if (User.IsInRole("0") || User.IsInRole("11=1") || User.IsInRole("12=1"))
+                                        {
+                                            <li class="nk-menu-item has-sub">
+                                                <a href="#" class="nk-menu-link nk-menu-toggle"><span class="nk-menu-icon"><em class="icon ni ni-article"></em></span><span class="nk-menu-text">Danh Mục</span></a>
+                                                <ul class="nk-menu-sub">
+                                                    @if (User.IsInRole("0") || User.IsInRole("11=1"))
+                                                    {
+                                                        <li class="nk-menu-item"><a href="@Url.Action("DMKe", "HeThong")" class="nk-menu-link"><span class="nk-menu-text">@Resources.Menu.DMKe</span></a></li>
+                                                    }
+                                                    @if (User.IsInRole("0") || User.IsInRole("12=1"))
+                                                    {
+                                                        <li class="nk-menu-item"><a href="@Url.Action("DMNhaCungCap", "HeThong")" class="nk-menu-link"><span class="nk-menu-text">@Resources.Menu.DMNhaCungCap</span></a></li>
+                                                    }
+
+                                                </ul>
+                                            </li>
+                                        }
+                                    }
+                                </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="nk-wrap ">
+                <div class="nk-header nk-header-fixed is-light">
+
+                    <div class="container-fluid">
+                        <div class="nk-header-wrap">
+
+                            <div class="nk-menu-trigger d-xl-none ml-n1"><a href="#" class="nk-nav-toggle nk-quick-nav-icon" data-target="sidebarMenu"><em class="icon ni ni-menu"></em></a></div>
+                            <div class="nk-header-brand d-xl-none">
+                                <a href="~/" class="logo-link nk-sidebar-logo">
+                                    <img class="logo-light logo-img" src="~/Content/upload/images/favicon.png" srcset="~/Content/upload/images/favicon.png 2x" alt="@Resources.Main.TenWeb">
+                                    <img class="logo-dark logo-img" src="~/Content/upload/images/favicon.png" srcset="~/Content/upload/images/favicon.png 2x" alt="@Resources.Main.TenWeb">
+                                    <img class="logo-small logo-img logo-img-small" src="~/Content/upload/images/favicon.png" srcset="~/Content/upload/images/favicon.png 2x" alt="@Resources.Main.TenWeb">
+                                </a>
+                            </div>
+                            <div class="nk-header-news d-none d-xl-block">
+                                <div class="nk-news-list">  <div id="clock">  <span class="wrap-time">  <span class="time-unit"> <span class="large day">Mon</span> <span class="small">DAY</span> </span>  <span class="time-unit"> <span class="large hours">00</span> <span class="small">HOURS</span> </span> <span class="separator">:</span>  <span class="time-unit"> <span class="large minutes">00</span> <span class="small">MINUTES</span> </span> <span class="separator">:</span>  <span class="time-unit"> <span class="large seconds">00</span> <span class="small">SECONDS</span> </span>  <span class="time-unit"> <span class="large period">AM</span> <span class="small">PERIOD</span> </span> </span> </div>  </div>
+                            </div>
+                            <div class="nk-header-tools">
+                                <ul class="nk-quick-nav">
+                                    <li class="dropdown user-dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                            <div class="user-toggle">
+                                                <div class="user-avatar sm"><em class="icon ni ni-user-alt"></em></div>
+                                                <div class="user-info d-none d-md-block">
+                                                    <div class="user-status">@User.Identity.Name</div>
+                                                    <div class="user-name dropdown-indicator">@nguoidung.HoTen</div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-md dropdown-menu-right dropdown-menu-s1">
+                                            <div class="dropdown-inner user-card-wrap bg-lighter d-none d-md-block">
+                                                <div class="user-card">
+                                                    <div class="user-avatar"><span>AB</span></div>
+                                                    <div class="user-info"><span class="lead-text">@nguoidung.HoTen</span><span class="sub-text">@nguoidung.TenNhom</span></div>
+                                                </div>
+                                            </div>
+                                            <div class="dropdown-inner">
+                                                <ul class="link-list">
+                                                    <li><a href="#" data-toggle="modal" data-target="#modalFormDoiMatKhau"><em class="icon ni ni-activity-alt"></em><span>Đổi mật khẩu</span></a></li>
+                                                </ul>
+                                            </div>
+                                            <div class="dropdown-inner">
+                                                <ul class="link-list">
+                                                    <li><a href="@Url.Action("Logout","Account")"><em class="icon ni ni-signout"></em><span>Đăng Xuất</span></a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="nk-content ">
+                    <div class="container-fluid">
+                        <div class="nk-content-inner">
+                            <div class="nk-content-body">
+                                <div class="nk-block-head nk-block-head-sm">
+                                    <div class="nk-block-between">
+                                        @RenderSection("Header", required: false)
+                                    </div>
+                                </div>
+                                <div class="nk-block">
+                                    @RenderBody()
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="nk-footer">
+                    <div class="container-fluid">
+                        <div class="nk-footer-wrap">
+                            <div class="nk-footer-copyright"> &copy; 2020 @Resources.Main.TenCongTy.</div>
+                            @*<div class="nk-footer-links">
+                                    <ul class="nav nav-sm">
+                                        <li class="nav-item"><a class="nav-link" href="#">Terms</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="#">Privacy</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="#">Help</a></li>
+                                    </ul>
+                                </div>*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" tabindex="-1" id="modalFormDoiMatKhau" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Đổi mật khẩu</h5>
+                    <a href="#" class="close" data-dismiss="modal" aria-label="Close"><em class="icon ni ni-cross"></em></a>
+                </div>
+                <div class="modal-body">
+                    <form action="#" class="form-validate is-alter" novalidate="novalidate">
+                        <div class="form-group">
+                            <label class="overline-title overline-title-alt form-label">Mật khẩu mới</label>
+                            <div id="txt-matkhaumoi">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="overline-title overline-title-alt form-label">Nhập lại mật khẩu</label>
+                            <div id="txt-nhaplaimatkhau">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <a href="#" class="btn btn-lg btn-primary" id="LuuDoiMatKhau" onclick="DoiMatKhau()"><em class="icon ni ni-save"></em><span>Lưu thông tin</span></a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @Scripts.Render("~/js/jquery")
+    @Scripts.Render("~/js/extreme")
+    @Scripts.Render("~/js/wms")
+    <script type="text/javascript">
+        $(function () {
+            $("#txt-matkhaumoi").dxTextBox({
+                mode: 'password'
+            });
+            $("#txt-nhaplaimatkhau").dxTextBox({
+                mode: 'password'
+            });
+            clockTicker();
+        });
+        function DoiMatKhau() {
+            var matkhaumoi = $("#txt-matkhaumoi").dxTextBox("instance").option('value');
+            var nhaplaimatkhau = $("#txt-nhaplaimatkhau").dxTextBox("instance").option('value');
+            if (matkhaumoi.trim() == "" || nhaplaimatkhau.trim() == "") {
+                showtoast("Mật khẩu và mật khẩu nhập lại không được để trống", "error");
+                return;
+            }
+            if (matkhaumoi != nhaplaimatkhau)
+            {
+                showtoast("Mật khẩu nhật lại không đúng", "error");
+                return;
+            }
+            var data = {};
+            data.MatKhau = matkhaumoi;
+            data.TaiKhoan = "@User.Identity.Name";
+            data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+            $.post("@Url.Action("LuuDoiMatKhau", "HeThong")", data).done(function (rs) {
+                if (rs.code == 1) {
+                    showtoast(rs.text, "success");
+                }
+                else {
+                    showtoast(rs.text, "error");
+                }
+            });
+        }
+    </script>
+    @RenderSection("ScriptsFile", required: false)
+    @RenderSection("CustomScripts", required: false)
+</body>
+</html>

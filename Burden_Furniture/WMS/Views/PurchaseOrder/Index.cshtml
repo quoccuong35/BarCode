@@ -1,0 +1,390 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    bool bEdit = @User.IsInRole("1=3");
+    bool bDel = @User.IsInRole("1=4");
+}
+
+<style>
+    .dx-header-row {
+        background-color: #005180;
+        color: #ffff;
+    }
+</style>
+
+@section Header{
+    <div class="nk-block-head-content">
+        <h3 class="nk-block-title page-title">Danh Sách @Resources.Main.DonDatHang</h3>
+        <div class="nk-block-des text-soft">
+        </div>
+    </div>
+    <div class="nk-block-head-content">
+        <div class="toggle-wrap nk-block-tools-toggle">
+            <a href="#" class="btn btn-icon btn-trigger toggle-expand mr-n1" data-target="pageMenu"><em class="icon ni ni-more-v"></em></a>
+            <div class="toggle-expand-content" data-content="pageMenu">
+                <ul class="nk-block-tools g-3">
+                    @if (User.IsInRole("0") || User.IsInRole("1=2"))
+                    {
+                        <li class="nk-block-tools-opt"><a href="@Url.Action("PhieuNhapPO", "PurchaseOrder")" class="btn btn-primary"><em class="icon ni ni-plus"></em><span>@Resources.Main.ThemMoi</span></a></li>
+                    }
+                    @if (User.IsInRole("0") || User.IsInRole("1=1"))
+                    {
+                        <li>
+                            <a href="#" class="btn btn-white btn-dim btn-outline-primary" id="XuatFileExcel"><em class="icon ni ni-download-cloud"></em><span>@Resources.Main.XuatFile</span></a>
+                        </li>
+                    }
+                    <li>
+                        <a href="#" class="btn btn-white btn-dim btn-outline-primary" id="InQRCode"><em class="icon ni ni-printer"></em><span>In QR Code</span></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="nk-block">
+    <div class="card card-bordered card-stretch">
+        <div class="card-inner-group">
+            <div class="card-inner position-relative ">
+                <div class="row justify-content">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label class="overline-title overline-title-alt form-label">@Resources.Main.NhaCungCap</label>
+                            <div id="select-nhacungcap">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-sm-2">
+                        <div class="form-group">
+                            <label class="overline-title overline-title-alt form-label">Số HĐ</label>
+                            <div id="txt-sohopdong">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-sm-3">
+                        <div class="form-group">
+                            <label class="overline-title overline-title-alt form-label">Số PO</label>
+                            <div id="txt-sopo">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-sm-3">
+                        <div class="form-group">
+                            <label class="overline-title overline-title-alt form-label">@Resources.Main.TuNgay (*)</label>
+                            <div id="date-tungay">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-sm-3">
+                        <div class="form-group">
+                            <label class="overline-title overline-title-alt form-label">@Resources.Main.DenNgay (*)</label>
+                            <div id="date-denngay">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row justify-content center">
+
+                    <div class="col-md-2 col-2 text-right">
+                        <label class="overline-title overline-title-alt form-label text-white">@Resources.Main.TimKiem</label>
+                        <div class="form-group "><button type="button" class="btn btn-secondary" onclick="LocDanhSach()">@Resources.Main.TimKiem</button></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-inner p-0">
+                <div id="gridContainer"></div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="loadpanel"></div>
+@section CustomScripts{
+
+    <script type="text/javascript">
+        var loadPanel = $(".loadpanel").dxLoadPanel({
+            shadingColor: "rgba(0,0,0,0.4)",
+            visible: false,
+            showIndicator: true,
+            showPane: true,
+            shading: true,
+            message: 'Loading..',
+            closeOnOutsideClick: false,
+        }).dxLoadPanel("instance");
+        var date = new Date();
+        var tungay = Globalize.format(new Date(date.getFullYear(), date.getMonth(), 1), "yyyy-MM-dd"),
+            denngay = Globalize.format(new Date(date.getFullYear(), date.getMonth(), date.getDate()), "yyyy-MM-dd");
+        var NhaCungCap = null;
+        $(function () {
+            $('#gridContainer').height($(window).height() - 250);
+            $("#txt-sohopdong").dxTextBox({
+                placeholder: "Nhập số HĐ."
+            });
+            $("#txt-sopo").dxTextBox({
+                placeholder: "Nhập số PO"
+            });
+            $("#date-tungay").dxDateBox({
+                value: new Date(date.getFullYear(), date.getMonth(), 1),
+                width: '100%',
+                displayFormat: 'dd/MM/yyyy',
+                onValueChanged: function (data) {
+                    tungay = Globalize.format(data.value, "yyyy-MM-dd");
+                },
+            }).dxDateBox("instance");
+            $("#date-denngay").dxDateBox({
+                value: date,
+                width: '100%',
+                displayFormat: 'dd/MM/yyyy',
+                onValueChanged: function (data) {
+                    denngay = Globalize.format(data.value, "yyyy-MM-dd");
+                },
+            }).dxDateBox("instance");
+            $.get('@Url.Action("GetNhaCungCap","Data")', function (rs) {
+            $("#select-nhacungcap").dxDropDownBox({
+                dataSource: new DevExpress.data.ArrayStore({ key: "IdNhaCungCap", data: rs }),
+                valueExpr: "IdNhaCungCap",
+                deferRendering: false,
+                placeholder: "Chọn nhà cung cấp...",
+                displayExpr: function (item) {
+                    return " [" + item.MaNhaCungCap + "] " + item.TenNhaCungCap;
+                },
+                showClearButton: true,
+                onOpened: function (e) {
+                    var drw = 550;
+                    var popupInstance = e.element.find(".dx-popup").dxPopup("instance"); popupInstance.option('width', drw); popupInstance.off("optionChanged", optionChangedHandler); popupInstance.on("optionChanged", optionChangedHandler); function optionChangedHandler(args) { if (args.name == "width" && args.value < drw) { args.component.option("width", drw); } } e.component.getDataSource().reload();
+                },
+                contentTemplate: function (e) {
+                    var value = e.component.option("value"),
+                        $dataGrid = $('<div class="wms-grid">').dxDataGrid({
+                            dataSource: e.component.getDataSource(),
+                            filterRow: {
+                                visible: true,
+                                applyFilter: "auto"
+                            },
+                            columns: [{ dataField: 'MaNhaCungCap', caption: 'Mã NCC' }, { dataField: 'TenNhaCungCap', caption: 'Nhà cung cấp' }],
+                            hoverStateEnabled: true, pager: { showPageSizeSelector: true, showInfo: true }, rowAlternationEnabled: true, showBorders: true, hoverStateEnabled: false, allowColumnReordering: true, allowColumnResizing: true, columnAutoWidth: true, selection: { mode: "single" }, selectedRowKeys: [value], height: "100%",
+                            onSelectionChanged: function (selectedItems) {
+                                var keys = selectedItems.selectedRowKeys, hasSelection = keys.length; e.component.option("value", hasSelection ? keys[0] : null); if (hasSelection) { e.component.close(); }
+                            }});
+                    dataGrid = $dataGrid.dxDataGrid("instance");
+                    e.component.on("valueChanged", function (args) {
+                        dataGrid.selectRows(args.value, false);
+                    });
+                    LocDanhSach();
+                    return $dataGrid;
+                }
+            });
+            // $("#select-nhacungcap").dxSelectBox("instance").option('value', 0);
+           
+            });
+
+          
+        });
+        
+        function LocDanhSach() {
+           
+            try {
+                //loadPanel.show();
+               // var NhaCungCap = $("#select-nhacungcap").dxDropDownBox("instance").option('value');
+                var SoHopDong = $("#txt-sohopdong").dxTextBox("instance").option('value');
+                var SoPO = $("#txt-sopo").dxTextBox("instance").option('value');
+                var TuNgay = Globalize.format($("#date-tungay").dxDateBox("instance").option('value'), 'yyyy-MM-dd');
+                var DenNgay = Globalize.format($("#date-denngay").dxDateBox("instance").option('value'), 'yyyy-MM-dd');
+
+                if (TuNgay == null || DenNgay == null) {
+                    alert("Từ ngày và đến ngày không để trống");
+                    return;
+                }
+
+                $.ajax({
+                    url: '/PurchaseOrder/LocDanhSach',
+                    type: 'GET',
+                    data: { TuNgay: TuNgay, DenNgay: DenNgay, SoHopDong: SoHopDong, SoPO: SoPO, NhaCungCap: NhaCungCap },
+                    contentType: 'application/json',
+                    success: function (data) {
+                        LoadGridView(data);
+                    },
+                    error: function (a, b, c) {
+                        alert('Error ' + a.status + ': ' + a.statusText);
+                        //loadPanel.hide();
+                    }
+                });
+            } catch (e) {
+               // loadPanel.hide();
+                console.log(e);
+            }
+        }
+        function LoadGridView(data)
+        {
+
+            $("#gridContainer").dxDataGrid({
+                dataSource: data.listPO,
+                showRowLines: true,
+                rowAlternationEnabled: true,
+                showBorders: true,
+                hoverStateEnabled: true,
+                allowColumnReordering: true,
+                allowColumnResizing: true,
+                columnAutoWidth: true,
+                filterRow: {
+                    visible: true,
+                    applyFilter: "auto"
+                },
+                paging: {
+                    pageSize: 10
+                },
+                pager: {
+                    showPageSizeSelector: true,
+                    allowedPageSizes: [10, 15, 20, 50, 100],
+                    showInfo: true
+                },
+                searchPanel: {
+                    visible: true,
+                    width: 240,
+                    placeholder: "Search..."
+                },
+                headerFilter: {
+                    visible: true
+                },
+                export: {
+                    enabled: true,
+                },
+                selection: {
+                    mode: "single"
+                },
+                hoverStateEnabled: true,
+                keyExpr: "IDPO",
+                showBorders: true,
+                columns: [{
+                    dataField: "MaNhaSanXuat",
+                    caption: "Mã Nhà SX",
+                    width: 80,
+                    allowEditing: false
+                },
+                {
+                    dataField: "TenNhaSanXuat",
+                    caption: "Tên Nhà Sản Xuất",
+                    editorType: "dxTextArea",
+                    width: 500,
+                    allowEditing: false
+                },
+                 {
+                     dataField: "SoHopDong",
+                     caption: "Số hợp đồng",
+                     width: 90
+                 },
+                 {
+                     dataField: "SoPO",
+                     caption: "Số PO",
+                     width: 90
+                 },
+                  {
+                      dataField: "NgayHopDong",
+                      caption: "Ngày gốc PH",
+                      width: 120
+                  },
+                  {
+                      dataField: "SoLichGiaoHang",
+                      caption: "Số giao dịch",
+                      width: 120
+                  },
+                ],
+                onRowDblClick : function (e) {
+                    self.location = "/PurchaseOrder/PhieuNhapPO?id="+e.key;
+                }  ,
+                masterDetail: {
+                    enabled: true,
+                    template: function (container, options) {
+                    var currentEmployeeData = options.data;
+                   $("<div>")
+                   .addClass("master-detail-caption")
+                   .text("Đơn Đặt Hàng Số " + currentEmployeeData.SoPO)
+                   .appendTo(container);
+
+                   $("<div>")
+                   .dxDataGrid({
+                    columnAutoWidth: true,
+                    showBorders: true,
+                    id:"POChiTiet",
+                    focusedRowEnabled: true,
+                    filterRow: {
+                        visible: true,
+                        applyFilter: "auto"
+                    },
+                    paging: {
+                        pageSize: 5
+                    },
+                    "export": {
+                        enabled: true,
+                        fileName: "Danh sách nhân sự trong nhóm",
+                    },
+                    columns: [{
+                        dataField: "MaSanPham",
+                        width: 120,
+                        caption: "Mã Hoàn Chỉnh",
+                        allowEditing: false
+                    }, {
+                        dataField: "MaChiTietSanPham",
+                        width: 90,
+                        caption: "Mã QLK",
+                        allowEditing: false
+                    }
+                    , {
+                        dataField: "TenChiTietSanPham",
+                        width: 200,
+                        caption: "Tên Chi Tiết Sản Phẩm",
+                        allowEditing: false
+                    }
+                    , {
+                        dataField: "SoLuongTrongMoiBo",
+                        width: 100,
+                        caption: "SL Trong Bộ",
+                        allowEditing: true,
+                    }, {
+                        dataField: "SoLuongPO",
+                        width: 100,
+                        caption: "SL PO",
+                        allowEditing: true
+                    }
+                    , {
+                        dataField: "SoLuongNhap",
+                        width: 100,
+                        caption: "SL Nhập",
+                        allowEditing: false
+                    }
+                    ],
+
+                    dataSource: new DevExpress.data.DataSource({
+                        store: new DevExpress.data.ArrayStore({
+                            key: "ID",
+                            data: data.listPOChiTiet
+                        }),
+                        filter: ["IDPO", "=", options.key]
+                    })
+
+                }).appendTo(container);}
+                }
+            });
+        }
+
+    </script>
+    @if (User.IsInRole("0") || User.IsInRole("1=1"))
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $("#XuatFileExcel").click(function () {
+                    var NhaCungCap = $("#select-nhacungcap").dxDropDownBox("instance").option('value');
+                    var SoHopDong = $("#txt-sohopdong").dxTextBox("instance").option('value');
+                    var SoPO = $("#txt-sopo").dxTextBox("instance").option('value');
+                    var TuNgay = Globalize.format($("#date-tungay").dxDateBox("instance").option('value'), 'yyyy-MM-dd');
+                    var DenNgay = Globalize.format($("#date-denngay").dxDateBox("instance").option('value'), 'yyyy-MM-dd');
+                    self.location = "/PurchaseOrder/XuatFileExcel?TuNgay=" + TuNgay + "&DenNgay=" + DenNgay + "&SoHopDong=" + SoHopDong + "&SoPo=" + SoPO + "&NhaCungCap=" + NhaCungCap;
+                });
+            });
+        </script>
+    }
+}

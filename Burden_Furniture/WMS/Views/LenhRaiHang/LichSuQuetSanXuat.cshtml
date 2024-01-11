@@ -1,0 +1,224 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Header{
+    <div class="nk-block-head-content">
+        <h3 class="nk-block-title page-title">@Resources.Menu.LichSuQuetSanXuat</h3>
+    </div>
+    <div class="nk-block-head-content">
+        <div class="toggle-wrap nk-block-tools-toggle">
+            <a href="#" class="btn btn-icon btn-trigger toggle-expand mr-n1" data-target="pageMenu"><em class="icon ni ni-more-v"></em></a>
+            <div class="toggle-expand-content" data-content="pageMenu">
+                <ul class="nk-block-tools g-3">
+                    @if (User.IsInRole("0") || User.IsInRole("15=6"))
+                    {
+                        <li>
+                            <a href="#" class="btn btn-white btn-dim btn-outline-primary" onclick="ExportXLS()"><em class="icon ni ni-download-cloud"></em><span>@Resources.Main.XuatFile</span></a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+
+}
+<div class="nk-block">
+    <div class="card card-bordered card-stretch">
+        <div class="card-inner-group">
+            <div class="card-inner position-relative ">
+                <div class="row justify-content-center">
+                    <div class="col-lg-3 col-sm-3">
+                        <div class="form-group">
+                            <label class="overline-title overline-title-alt form-label">Số EPI</label>
+                            <div id="txt-soepi">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-3">
+                        <div class="form-group">
+                            <label class="overline-title overline-title-alt form-label">Mã SKU</label>
+                            <div id="txt-masku">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-3">
+                        <div class="form-group">
+                            <label class="form-label">Công Đoạn <b class="text-danger">*</b></label>
+                            <div id="select-congdoan">
+                            </div>
+                        </div>
+                    </div>
+                   
+                    <div class="col-md-2 col-2 text-right">
+                        <label class="overline-title overline-title-alt form-label text-white">@Resources.Main.TimKiem</label>
+                        <div class="form-group "><button type="button" class="btn btn-secondary" onclick="Refresh()">@Resources.Main.TimKiem</button></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-inner p-0">
+                <div style="padding-top:0;margin-top:0" id="danh-sach">
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="loadpanel"></div>
+@section CustomScripts{
+    <script type="text/javascript">
+
+           var soEPI = null,maCongDoan = null,maSKU = null;
+       var loadPanel = $(".loadpanel").dxLoadPanel({
+           shadingColor: "rgba(0,0,0,0.4)",
+           visible: false,
+           showIndicator: true,
+           showPane: true,
+           shading: true,
+           message: 'Loading..',
+           closeOnOutsideClick: false,
+       }).dxLoadPanel("instance");
+        $(document).ready(function () {
+            try {
+                loadPanel.show();
+                $("#txt-masku").dxTextBox({
+                    placeholder: "Nhập mã SKU"
+                });
+                $("#txt-soepi").dxTextBox({
+                    placeholder: "Nhập số EPI"
+                });
+                 $.get('@Url.Action("GetCongDoan", "Data")', function (rs) {
+                     $("#select-congdoan").dxDropDownBox({
+                         dataSource: new DevExpress.data.ArrayStore({ key: "MaCongDoan", data: rs }),
+                        valueExpr: "MaCongDoan",
+                        deferRendering: false,
+                        placeholder: "Chọn công đoạn",
+                        displayExpr: function (item) {
+                            return  item.TenCongDoan;
+                        },
+                        showClearButton: true,
+                        onOpened: function (e) {
+                            var drw = 550;
+                            var popupInstance = e.element.find(".dx-popup").dxPopup("instance"); popupInstance.option('width', drw); popupInstance.off("optionChanged", optionChangedHandler); popupInstance.on("optionChanged", optionChangedHandler); function optionChangedHandler(args) { if (args.name == "width" && args.value < drw) { args.component.option("width", drw); } } e.component.getDataSource().reload();
+                        },
+                        contentTemplate: function (e) {
+                            var value = e.component.option("value"),
+
+                                $dataGrid = $("<div>").dxDataGrid({
+                                    filterRow: {
+                                        visible: true,
+                                        applyFilter: "auto"
+                                    },
+                                    dataSource: e.component.getDataSource(),
+                                    columns: [ { dataField: 'TenCongDoan', caption: 'Tên Công Đoạn' }],
+                                    hoverStateEnabled: true, pager: { showPageSizeSelector: true, showInfo: true }, rowAlternationEnabled: true, showBorders: true, hoverStateEnabled: false, allowColumnReordering: true, allowColumnResizing: true, columnAutoWidth: true, selection: { mode: "single" }, selectedRowKeys: [value], height: "100%",
+                                    onSelectionChanged: function (selectedItems) {
+                                        var keys = selectedItems.selectedRowKeys, hasSelection = keys.length; e.component.option("value", hasSelection ? keys[0] : null); if (hasSelection) { e.component.close(); }
+                                    }});
+                            dataGrid = $dataGrid.dxDataGrid("instance");
+                            e.component.on("valueChanged", function (args) {
+                                dataGrid.selectRows(args.value, false);
+                            });
+                            return $dataGrid;
+                        }
+                     });
+
+                });
+                $('#danh-sach').height($(window).height() - 250);
+                loadReport();
+                loadPanel.hide();
+            } catch (e) {
+                loadPanel.hide();
+            }
+       });
+       function loadReport() {
+     
+           $.ajax({
+               url: '@Url.Action("getLichSuQuetSanXuat", "LenhRaiHang")',
+               data: { MaCongDoan: maCongDoan, MaSKU: maSKU, SoEPI: soEPI },
+               success: function (rs) {
+                   $("#danh-sach").dxDataGrid({
+                       dataSource: rs,
+                       remoteOperations: {
+                           paging: true,
+                           filtering: true
+                       },
+                       filterRow: {
+                           visible: true,
+                           applyFilter: "auto"
+                       },
+                       paging: {
+                           pageSize: 10
+                       },
+                       export: {
+                           enabled: true,
+                           fileName: "Lịch sử quét sản xuất",
+                       },
+                       showRowLines: true,
+                       rowAlternationEnabled: true,
+                       showBorders: true,
+                       hoverStateEnabled: true,
+                       allowColumnReordering: true,
+                       allowColumnResizing: true,
+                       columnAutoWidth: true,
+                       onRowUpdating: function (e) {
+                           for (var property in e.oldData) {
+                               if (!e.newData.hasOwnProperty(property)) {
+                                   e.newData[property] = e.oldData[property];
+                               }
+                           }
+                           updatedObject = e.newData;
+                       },
+                       pager: {
+                           showPageSizeSelector: true,
+                           allowedPageSizes: [10, 15, 20, 50, 100],
+                           showInfo: true
+                       },
+                       columnFixing: {
+                           enabled: false
+                       },
+                       columns: [
+                           { dataField: 'SoEPI', caption: 'Số EPI', width: 120, allowEditing: false },
+                           { dataField: 'MaChiTietSanPham', caption: 'Mã SKU', width: 120, allowEditing: false },
+                           { dataField: 'MaSanPham', caption: 'Mã SP', width: 100, allowEditing: false },
+                           { dataField: 'MoTa', caption: 'Diễn giải', width: 200, allowEditing: false },
+                           { dataField: 'SoLuongEPI', caption: 'Số lượng EPI', width: 100, allowEditing: false },
+                           { dataField: 'SoNumOf', caption: 'Số OF', width: 100, allowEditing: false },
+                           { dataField: 'GioQuet', caption: 'Thời gian', width: 150, allowEditing: false },
+                           { dataField: 'TenCongDoan', caption: 'Công đoạn', width: 200, allowEditing: false },
+                           { dataField: 'TrangThai', caption: 'Tình trạng', width: 200, allowEditing: false },
+                          
+                       ],
+                   });
+               }
+           });
+        }
+        function Refresh() {
+            try {
+                loadPanel.show();
+                ////alert($("#select-congdoan").dxDropDownBox("instance").option('text'));
+
+                maCongDoan = $("#select-congdoan").dxDropDownBox("instance").option('value');
+
+                if (maCongDoan === null || maCongDoan == "") {
+                    DevExpress.ui.notify("Chưa chọn công đoạn!", "warning", 2000);
+                    loadPanel.hide();
+                    return;
+                }
+                maSKU = $("#txt-masku").dxTextBox("instance").option('value');
+                soEPI = $("#txt-soepi").dxTextBox("instance").option('value');
+                loadReport()
+                loadPanel.hide();
+            } catch (e) {
+                loadPanel.hide();
+            }
+        }
+       function ExportXLS() {
+           var iframe = document.getElementById("main-content");
+           iframe.contentWindow.Download();
+       }
+    </script>
+}

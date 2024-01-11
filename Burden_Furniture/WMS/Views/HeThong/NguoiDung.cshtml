@@ -1,0 +1,241 @@
+﻿@model WMS.DB.HT_NguoiDung
+@{
+
+    ViewBag.Title = Resources.Menu.PhieuNhapHang;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int nguoidung = Model.IdNguoiDung;
+    string btnname = Model.IdNguoiDung > 0 ? "EditNguoiDung" : "AddNguoiDung", IdNhom = "null";
+    int hoatdong = 1;
+    if (nguoidung > 0)
+    {
+        IdNhom = Model.IdNhom.ToString();
+
+    }
+    hoatdong = Model.HoatDong == true ? 1 : 0;
+}
+@section Header{
+    <div class="nk-block-head-content">
+        <h3 class="nk-block-title page-title">Thông tin chi tiết người dùng</h3>
+
+        <div class="nk-block-des text-soft">
+
+            @if (nguoidung > 0)
+            {
+                <p>Sửa thông tin người dùng</p>
+            }
+            else
+            {
+                <p>Thêm người dùng</p>
+            }
+        </div>
+    </div>
+    <div class="nk-block-head-content">
+        <div class="toggle-wrap nk-block-tools-toggle">
+            <a href="#" class="btn btn-icon btn-trigger toggle-expand mr-n1" data-target="pageMenu"><em class="icon ni ni-more-v"></em></a>
+            <div class="toggle-expand-content" data-content="pageMenu">
+                <ul class="nk-block-tools g-3">
+                    @if (User.IsInRole("0"))
+                    {
+
+                        <li class="nk-block-tools-opt"><div id="@btnname" class="btn btn-primary"><em class="icon ni ni-save"></em><span>@Resources.Main.CapNhat</span></div></li>
+                    }
+                    @if (User.IsInRole("0"))
+                    {
+                        <li>
+                            <a href="@Url.Action("NguoiDung", "HeThong")" class="btn btn-white btn-icon btn-outline-primary " data-toggle="tooltip" data-placement="top" title="Thêm mới @Resources.Menu.PhieuNhapHang.ToLower() khác"><em class="icon ni ni-plus"></em></a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+}
+<div class="nk-block">
+    <div class="card card-bordered card-stretch">
+        <div class="card-inner-group">
+            <div class="card-inner position-relative ">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form id="inputform" data-parsley-validate>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label class="form-label">Tài khoản <b class="text-danger">*</b></label>
+                                        <div class="form-control-wrap">
+                                            <div class="form-icon form-icon-left"><em class="icon ni ni-lock"></em></div>
+                                            <input type="text" class="form-control" id="taikhoan" placeholder="Nhập tên đăng nhập" value="@Model.TaiKhoan" @{ViewContext.Writer.Write(Model.IdNguoiDung > 1 ? "readonly" : "");} required data-parsley-length="[3, 20]" data-parsley-errors-container="#errorTaiKhoan">
+                                        </div>
+                                        <div id="errorTaiKhoan">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label class="form-label">Họ tên<b class="text-danger">*</b></label>
+                                        <div class="form-control-wrap">
+                                            <div class="form-icon form-icon-left"><em class="icon ni ni-lock"></em></div>
+                                            <input type="text" class="form-control" id="hoten" placeholder="Nhập họ tên" value="@Model.HoTen" required data-parsley-length="[3, 20]" data-parsley-errors-container="#errorHoTen">
+                                        </div>
+                                        <div id="errorHoTen">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label class="form-label">Mật khẩu <b class="text-danger">*</b></label>
+                                        <div class="form-control-wrap">
+                                            <div class="form-icon form-icon-left"><em class="icon ni ni-lock"></em></div>
+                                            <input type="password" class="form-control" id="matkhau" placeholder="Nhập mật khẩu" value="@Model.MatKhau" required data-parsley-length="[3, 50]" data-parsley-errors-container="#errormatkhau">
+                                        </div>
+                                        <div id="errormatkhau">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label class="form-label">Nhóm người dùng <b class="text-danger">*</b></label>
+                                        <div id="select-nhomnguoidung">
+                                        </div>
+                                    </div>
+                                </div>
+                                @if (nguoidung > 0)
+                                {
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                            <label class="form-label">Trạng thái</label>
+                                            <div id="radio-hoatdong">
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section ScriptsFile{
+<script src="~/Scripts/parsley.min.js"></script>
+}
+@section CustomScripts{
+    <script type="text/javascript">
+        var IdNhom = null;
+        $(function () {
+             $("#radio-hoatdong").dxRadioGroup({
+                items: [{ id: 1, text: 'Hoạt động' }, { id: 0, text: 'Ngưng hoạt động' }],
+                value: @hoatdong,
+                valueExpr: "id", displayExpr:'text',
+                layout: "horizontal"
+            });
+             $.get('@Url.Action("GetNhomNguoiDung", "Data")', function (rs) {
+                 $("#select-nhomnguoidung").dxDropDownBox({
+                     dataSource: new DevExpress.data.ArrayStore({ key: "IdNhom", data: rs }),
+                    valueExpr: "IdNhom",
+                    deferRendering: false,
+                    placeholder: "Chọn nhóm người dùng...",
+                    displayExpr: function (item) {
+                        return  item.TenNhom;
+                    },
+                    showClearButton: true,
+                     value: @IdNhom,
+                    onOpened: function (e) {
+                        var drw = 550;
+                        var popupInstance = e.element.find(".dx-popup").dxPopup("instance"); popupInstance.option('width', drw); popupInstance.off("optionChanged", optionChangedHandler); popupInstance.on("optionChanged", optionChangedHandler); function optionChangedHandler(args) { if (args.name == "width" && args.value < drw) { args.component.option("width", drw); } } e.component.getDataSource().reload();
+                    },
+                    contentTemplate: function (e) {
+                        var value = e.component.option("value"),
+
+                            $dataGrid = $("<div>").dxDataGrid({
+                                filterRow: {
+                                    visible: true,
+                                    applyFilter: "auto"
+                                },
+                                dataSource: e.component.getDataSource(),
+                                columns: [ { dataField: 'TenNhom', caption: 'Tên Nhóm' }],
+                                hoverStateEnabled: true, pager: { showPageSizeSelector: true, showInfo: true }, rowAlternationEnabled: true, showBorders: true, hoverStateEnabled: false, allowColumnReordering: true, allowColumnResizing: true, columnAutoWidth: true, selection: { mode: "single" }, selectedRowKeys: [value], height: "100%",
+                                onSelectionChanged: function (selectedItems) {
+                                    var keys = selectedItems.selectedRowKeys, hasSelection = keys.length; e.component.option("value", hasSelection ? keys[0] : null); if (hasSelection) { e.component.close(); }
+                                }});
+                        dataGrid = $dataGrid.dxDataGrid("instance");
+                        e.component.on("valueChanged", function (args) {
+                            dataGrid.selectRows(args.value, false);
+                        });
+                        return $dataGrid;
+                    }
+                 }).dxValidator({ validationRules: [{ type: "required" }] });;
+
+            });
+        });
+    </script>
+    @if (User.IsInRole("0") || User.IsInRole("9=3"))
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $("#EditNguoiDung").click(function () {
+                    var data = {};
+                    var HoTen = $("#hoten").val();
+                    var MatKhau = $("#matkhau").val();
+                    var nhomnguoidung = $("#select-nhomnguoidung").dxDropDownBox("instance").option('value')
+                    var temp = $("#radio-hoatdong").dxRadioGroup("instance").option('value')
+                    var HoatDong = temp == 1 ? true : false;
+                    data.IdNhom = nhomnguoidung;
+                    data.HoTen = HoTen;
+                    data.IdNguoiDung = "@nguoidung";
+                    data.MatKhau = MatKhau;
+                    data.HoatDong = HoatDong;
+                    data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+                    $.post('@Url.Action("EditNguoiDung", "HeThong")', data).done(function (rs) {
+                            if (rs.code > 0) {
+                                showtoast(rs.text, 'success');
+                            }
+                            else {
+                                showtoast(rs.text, 'error');
+                            }
+
+                        });
+                })
+            })
+        </script>
+    }
+    @if (User.IsInRole("0") || User.IsInRole("9=2"))
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $("#AddNguoiDung").click(function () {
+                    var validate = true;
+
+                    var nhomnguoidung = $("#select-nhomnguoidung").dxDropDownBox("instance").option('value')
+                    if (nhomnguoidung == null) {
+                        $('#select-nhomnguoidung').dxValidator('instance').validate(); validate = false;
+                    }
+                    if ($('#inputform').parsley().validate() && validate) {
+                        var data = {};
+                        var HoTen = $("#hoten").val();
+                        var MatKhau = $("#matkhau").val();
+                        var TaiKhoan = $("#taikhoan").val();
+                        data.IdNhom = nhomnguoidung;
+                        data.HoTen = HoTen;
+                        data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+                        data.MatKhau = MatKhau;
+                        data.TaiKhoan = TaiKhoan;
+                        $.post('@Url.Action("AddNguoiDung", "HeThong")', data).done(function (rs) {
+                                if (rs.code > 0) {
+                                    showtoast(rs.text, 'success');
+                                }
+                                else {
+                                    showtoast(rs.text, 'error');
+                                }
+
+                            });
+                    }
+
+                })
+            })
+        </script>
+    }
+}

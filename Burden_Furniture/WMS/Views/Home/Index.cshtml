@@ -1,0 +1,206 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+@section Header{
+    <div class="nk-block-head-content">
+        <h3 class="nk-block-title page-title">Tiến Độ Sản Xuất</h3>
+        <div class="nk-block-des text-soft">
+            <p>Thông tin tiến độ sản xuất số EPI theo từng công đoạn ở phân xưởng.</p>
+        </div>
+    </div>
+
+}
+
+<div class="row g-gs">
+
+    <div class="col-xxl-6">
+        <div class="card card-bordered h-100">
+            <div class="card-inner">
+                <div id="gridContainer"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="loadpanel"></div>
+@section CustomScripts{
+
+    <script type="text/javascript">
+        var loadPanel = $(".loadpanel").dxLoadPanel({
+            shadingColor: "rgba(0,0,0,0.4)",
+            visible: false,
+            showIndicator: true,
+            showPane: true,
+            shading: true,
+            message: 'Loading..',
+            closeOnOutsideClick: false,
+        }).dxLoadPanel("instance");
+        $(function () {
+            $('#gridContainer').height($(window).height() - 250);
+            try {
+               
+                loadPanel.show();
+                $.get("@Url.Action("GetDashBoard", "Home")", function (data) {
+                    $("#gridContainer").dxDataGrid({
+                        dataSource: data,
+                        remoteOperations: {
+                            paging: true,
+                            filtering: true
+                        },
+                        filterRow: {
+                            visible: true,
+                            applyFilter: "auto"
+                        },
+                        paging: {
+                            pageSize: 10
+                        },
+                        export: {
+                            enabled: true,
+                            fileName: "Thông tin trong sản xuất",
+                        },
+                        showRowLines: true,
+                        rowAlternationEnabled: true,
+                        showBorders: true,
+                        hoverStateEnabled: true,
+                        allowColumnReordering: true,
+                        allowColumnResizing: true,
+                        columnAutoWidth: true,
+                        onRowUpdating: function (e) {
+                            for (var property in e.oldData) {
+                                if (!e.newData.hasOwnProperty(property)) {
+                                    e.newData[property] = e.oldData[property];
+                                }
+                            }
+                            updatedObject = e.newData;
+                        },
+                        pager: {
+                            showPageSizeSelector: true,
+                            allowedPageSizes: [10, 15, 20, 50, 100],
+                            showInfo: true
+                        },
+                        columnFixing: {
+                            enabled: false
+                        },
+                        columns: [{
+                            dataField: "SoEPI",
+                            caption: "Số Cont EPI",
+                            width: 80,
+                            allowEditing: false,
+                            fixed: true,
+                        },
+                        {
+                            dataField: "MaSanPham",
+                            caption: "Mã SP",
+                            editorType: "dxTextArea",
+                            width: 80,
+                            allowEditing: false,
+                            //fixed: true,
+                        },
+                        {
+                            dataField: "MaChiTietSanPham",
+                            caption: "Mã Hàng SKU",
+                            width: 120,
+                            fixed: true,
+                        },
+                        {
+                            dataField: "MaKH",
+                            caption: "Mã KH",
+                            width: 90,
+                            //fixed: true,
+                        },
+                        {
+                            dataField: "MoTa",
+                            caption: "Mô Tả",
+                            width: 220,
+                            fixed: true,
+                        },
+                        {
+                            dataField: "KichThuocSanPham",
+                            caption: "Kích thước SP",
+                            //width: 150
+                        },
+                        {
+                            dataField: "MaMauOrVai",
+                            caption: "Màu/Mã Vải Color",
+                            width: 120
+                        },
+                        {
+                            dataField: "ODM",
+                            caption: "ODM",
+                            // width: 100
+                        },
+                        {
+                            dataField: "TayNam",
+                            caption: "Tay Nắm",
+                            //width: 100
+                        },
+                        {
+                            dataField: "MaThung",
+                            caption: "Mã Thùng",
+                            // width: 100
+                        },
+                        {
+                            dataField: "MauTrong",
+                            caption: "Mà trong",
+                            //width: 100
+                        },
+                        {
+                            dataField: "SoLuongEPI",
+                            caption: "SL EPI",
+                            fixed: true,
+                            //width: 90
+                        },
+                        {
+                            dataField: "SoLuongEPI",
+                            caption: "SL trong SX",
+                            //width: 90
+                        },
+                        {
+                            dataField: "HangTrang",
+                            caption: "Hàng Trắng",
+                            fixed: true,
+                            width: 90
+                        },
+                        {
+                            dataField: "Moc",
+                            caption: "Mộc",
+                            fixed: true,
+                            width: 50
+                        },
+                        {
+                            dataField: "Son",
+                            caption: "Sơn",
+                            fixed: true,
+                            width: 50
+                        },
+                        {
+                            dataField: "XuatKhau",
+                            caption: "Xuất Khẩu",
+                            fixed: true,
+                            //width: 90
+                        },
+                        {
+                            dataField: "DongGoi",
+                            caption: "Đóng Gói",
+                            fixed: true,
+                            //width: 90OKorNot
+                        }
+                            ,
+                        {
+                            dataField: "OKorNot",
+                            caption: "OK or Not",
+                            fixed: true,
+                            //width: 90OKorNot
+                        }
+                        ],
+                    });
+                    loadPanel.hide();
+                });
+            } catch (e) {
+                alert(e);
+                loadPanel.hide();
+            }
+        });
+
+    </script>
+}

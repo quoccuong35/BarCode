@@ -1,0 +1,281 @@
+﻿
+@using WMS.DB;
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    bool add, edit, del;
+    add = edit = del = false;
+    if (User.IsInRole("0") || User.IsInRole("11=2"))
+    {
+        add = true;
+    }
+    if (User.IsInRole("0") || User.IsInRole("11=3"))
+    {
+        edit = true;
+    }
+    if (User.IsInRole("0") || User.IsInRole("11=4"))
+    {
+        del = true;
+    }
+}
+
+<style>
+    .dx-header-row {
+        background-color: #005180;
+        color: #fff;
+    }
+    .modal-dialog-full-width {
+        width: 100% !important;
+        height: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        max-width: none !important;
+    }
+
+    .modal-content-full-width {
+        height: auto !important;
+        min-height: 100% !important;
+        border-radius: 0 !important;
+        background-color: #ececec !important
+    }
+
+    .modal-header-full-width {
+        border-bottom: 1px solid #9ea2a2 !important;
+    }
+
+    .modal-footer-full-width {
+        border-top: 1px solid #9ea2a2 !important;
+    }
+    .dx-datagrid-content .dx-datagrid-table .dx-row .dx-command-select {
+       
+        width: 70px!important;
+      
+        max-width: 70px!important;
+    }
+</style>
+@section Header{
+    <div class="nk-block-head-content">
+        <h3 class="nk-block-title page-title">Danh sách kệ hàng</h3>
+    </div>
+    <div class="nk-block-head-content">
+        <div class="toggle-wrap nk-block-tools-toggle">
+            <a href="#" class="btn btn-icon btn-trigger toggle-expand mr-n1" data-target="pageMenu"><em class="icon ni ni-more-v"></em></a>
+            <div class="toggle-expand-content" data-content="pageMenu">
+                <ul class="nk-block-tools g-3">
+                    <li>
+                        <a href="#" class="btn btn-white btn-dim btn-outline-primary" id="InQRCode" ><em class="icon ni ni-printer"></em><span>In QR Code</span></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+}
+<div class="nk-block">
+    <div class="card card-bordered card-stretch">
+        <div class="card-inner-group">
+            <div class="card-inner p-0">
+                <div id="gridContainer"></div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal fade right" id="exampleModalPreview" tabindex="-1" role="dialog" aria-labelledby="exampleModalPreviewLabel">
+    <div class="modal-dialog-full-width modal-dialog momodel modal-fluid" role="document">
+        <div class="modal-content-full-width modal-content ">
+            <div class=" modal-header-full-width   modal-header text-center">
+                <button type="button" class="close " data-dismiss="modal" onclick="Thoat()">
+                    <span style="font-size: 1.3em;" aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="ContendBody">
+               
+            </div>
+        </div>
+    </div>
+</div>
+@section CustomScripts{
+    <script type="text/javascript">
+        $(function () {
+            $('#gridContainer').height($(window).height() - 200);
+            LocDanhSach();
+        })
+
+        function LocDanhSach() {
+            $.get("@Url.Action("GetKe", "HeThong")")
+                    .done(function (result) {
+                        LoadDataGrid(result.data);
+                    })
+                    .fail(function (jqxhr, textStatus, error) {
+                        deferred.reject("Data Loading Error");
+                    });
+        }
+        function LoadDataGrid(dataSource) {
+
+                $("#gridContainer").dxDataGrid({
+                    dataSource: dataSource,
+                    selection: {
+                        mode: "multiple"
+                    },
+                    remoteOperations: {
+                        paging: true,
+                        filtering: true
+                    },
+                  editing: {
+                        mode: "popup",
+                        allowUpdating: "@edit" == "True" ? true : false,  
+                        allowDeleting: "@del" == "True" ? true : false, 
+                        allowAdding:  "@add" == "True" ? true : false,
+                        useIcons: true,
+                        form: {
+                            labelLocation: "top"
+                        },
+                        popup: {
+                            title: "Thông Tin Kệ Hàng",
+                            showTitle: true,
+                            width: 700,
+                            height: 525,
+                            position: {
+                                my: "top",
+                                at: "top",
+                                of: window
+                            }
+                        }
+             },
+                    filterRow: {
+                        visible: true,
+                        applyFilter: "auto"
+                    },
+                    paging: {
+                        pageSize: 10
+                    },
+                    showRowLines: true,
+                    rowAlternationEnabled: true,
+                    showBorders: true,
+                    hoverStateEnabled: true,
+                    allowColumnReordering: true,
+                    allowColumnResizing: true,
+                    columnAutoWidth: true,
+                    pager: {
+                        showPageSizeSelector: true,
+                        allowedPageSizes: [10, 15, 20, 50, 100],
+                        showInfo: true
+                    },
+                    columnFixing: {
+                        enabled: false
+                    },
+                    keyExpr: "IdKe",
+                    columns: [
+                    {
+                        dataField: "MaKe",
+                        caption: "Mã kệ",
+                            width: 120, fixed: true,
+                            validationRules: [{ type: "required" }]
+
+                    },
+                    {
+                        dataField: "TenKe",
+                        caption: "Tên kệ",
+                        width: 100, fixed: true,
+                        validationRules: [{ type: "required" }]
+                    },
+                    ],
+                    onRowUpdating: function (e) {
+                        if (e.key > 0) {
+                            EditKe(e.newData, e.key);
+                        }
+
+                    },
+                    onRowRemoving: function (e) {
+                        if (e.key > 0) {
+                            DelKe(e.key);
+                        }
+                    },
+                    onRowInserting: function (e) {
+                        AddKe(e);
+                    },
+                });
+        }
+        function DelKe(id) {
+            var data = {};
+            data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+            data.id = id;
+            $.post('@Url.Action("DelKe", "HeThong")', data).done(function (rs) {
+                if (rs.code == 1) {
+                    showtoast(rs.text, 'success');
+                    LocDanhSach();
+                }
+                else {
+                    LocDanhSach();
+                    showtoast(rs.text, 'error');
+                }
+
+            }).fail(function () {
+                alert("error");
+                LocDanhSach();
+            });
+        }
+        function AddKe(e) {
+            var data = {};
+            data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+            data.MaKe = e.data.MaKe.toUpperCase();
+            data.Tenke = e.data.TenKe;
+                   $.post('@Url.Action("AddKe", "HeThong")', data).done(function (rs) {
+                if (rs.code == 1) {
+                    showtoast(rs.text, 'success');
+                    LocDanhSach();
+                }
+                else {
+                    LocDanhSach();
+                    showtoast(rs.text, 'error');
+                }
+
+            }).fail(function () {
+                alert("error");
+                LocDanhSach();
+            });
+        }
+        function EditKe(item, id) {
+            var data = {};
+
+            data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+            data.id = id;
+            var arryPropertyName = Object.getOwnPropertyNames(item);
+            for (var i = 0; i < arryPropertyName.length; i++) {
+                data[arryPropertyName[i]] = item[arryPropertyName[i]].toString()
+            }
+            $.post('@Url.Action("EditKe", "HeThong")', data).done(function (rs) {
+                if (rs.code == 1) {
+                    showtoast(rs.text, 'success');
+                    LocDanhSach();
+                }
+                else {
+                    LocDanhSach();
+                    showtoast(rs.text, 'error');
+                }
+
+            }).fail(function () {
+                alert("error");
+                LocDanhSach();
+            });
+        }
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#InQRCode").click(function () {
+             
+                var grid = $("#gridContainer").dxDataGrid("instance");
+                var selectedRowsData = grid.getSelectedRowKeys();
+                var id = "";
+                for (var i = 0; i < selectedRowsData.length; i++) {
+                    id = id + selectedRowsData[i] + ';';
+                }
+                window.open(
+                    "/Report/InQRCodeKe?id=" + id,
+                    '_blank' // <- This is what makes it open in a new window.
+                );
+            });
+
+        });
+    </script>
+}

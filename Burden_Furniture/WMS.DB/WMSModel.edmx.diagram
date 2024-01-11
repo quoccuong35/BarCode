@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="c0cd3e3e67d6407aaad2db35b494e0d7" Name="Diagram1" ZoomLevel="72">
+        <EntityTypeShape EntityType="WMSModel.BD_LenhRaiHang" Width="2.875" PointX="0.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="WMSModel.BD_PhieuNhapHang" Width="1.5" PointX="4.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="WMSModel.BD_PhieuNhapHangChiTiet" Width="1.5" PointX="2.75" PointY="5.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="WMSModel.BD_Po" Width="1.5" PointX="4.75" PointY="5.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="WMSModel.BD_POChiTiet" Width="1.5" PointX="6.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="WMSModel.HT_NhomNguoiDung" Width="1.5" PointX="10.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="WMSModel.HT_NhomQuyen" Width="1.5" PointX="10.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="WMSModel.HT_Quyen" Width="1.5" PointX="10.75" PointY="7.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="WMSModel.HT_SQL" Width="1.5" PointX="10.75" PointY="10.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="WMSModel.HS_CongDoan" Width="1.5" PointX="7.75" PointY="11.75" />
+        <EntityTypeShape EntityType="WMSModel.HS_Ke" Width="1.5" PointX="13.375" PointY="0.75" />
+        <EntityTypeShape EntityType="WMSModel.BD_LichSuChuyenKe" Width="1.5" PointX="13.375" PointY="3.75" />
+        <EntityTypeShape EntityType="WMSModel.Sys_CauHinh" Width="1.5" PointX="13.375" PointY="7.75" />
+        <EntityTypeShape EntityType="WMSModel.BD_NhapKhoThanhPham" Width="1.5" PointX="13.375" PointY="10.75" />
+        <EntityTypeShape EntityType="WMSModel.BD_QuetSanXuat" Width="1.5" PointX="0.75" PointY="11.75" />
+        <EntityTypeShape EntityType="WMSModel.HT_NguoiDung" Width="1.5" PointX="10.375" PointY="13.75" />
+        <EntityTypeShape EntityType="WMSModel.HT_PhamViCongDoan" Width="1.5" PointX="7.375" PointY="7.75" />
+        <EntityTypeShape EntityType="WMSModel.BD_LichSuChuyenKeThanhPham" Width="1.5" PointX="5.375" PointY="14.75" />
+        <EntityTypeShape EntityType="WMSModel.HS_Menu" Width="1.5" PointX="7.375" PointY="14.75" />
+        <EntityTypeShape EntityType="WMSModel.HT_PhanQuyen" Width="1.5" PointX="15.375" PointY="0.75" />
+        <EntityTypeShape EntityType="WMSModel.HS_TrangThaiNhapKhoTP" Width="1.5" PointX="15.375" PointY="4.75" />
+        <EntityTypeShape EntityType="WMSModel.BD_LichSuInQRCode1" Width="1.5" PointX="15.375" PointY="7.75" />
+        <EntityTypeShape EntityType="WMSModel.HT_HistoryEditData" Width="1.5" PointX="15.375" PointY="11.75" />
+        <EntityTypeShape EntityType="WMSModel.HS_NhaCungCap" Width="1.5" PointX="12.375" PointY="15.75" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

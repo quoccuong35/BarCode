@@ -1,0 +1,11 @@
+﻿@Html.DevExpress().Spreadsheet(settings => {
+    settings.Name = "ViewReport";
+    settings.CallbackRouteValues = new { Controller = "Report", Action = "SpreadsheetPartial" };
+    settings.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+    settings.Height = 650;
+    settings.ReadOnly = true;
+    settings.WorkDirectory = "~/Content/Upload/Export";
+    settings.RibbonMode = DevExpress.Web.ASPxSpreadsheet.SpreadsheetRibbonMode.None;
+    settings.ShowConfirmOnLosingChanges = false;
+
+}).Open(Model).GetHtml()

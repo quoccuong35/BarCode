@@ -1,0 +1,224 @@
+﻿@using WMS.DB;
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .dx-header-row {
+        background-color: #005180;
+        color: #ffff;
+    }
+</style>
+@section Header{
+    <div class="nk-block-head-content">
+        <h3 class="nk-block-title page-title">In Mẫu QR Code</h3>
+        <div class="nk-block-des text-soft">
+            <p>In Mẫu QR Code 1</p>
+        </div>
+    </div>
+    <div class="nk-block-head-content">
+        <div class="toggle-wrap nk-block-tools-toggle">
+            <a href="#" class="btn btn-icon btn-trigger toggle-expand mr-n1" data-target="pageMenu"><em class="icon ni ni-more-v"></em></a>
+            <div class="toggle-expand-content" data-content="pageMenu">
+                <ul class="nk-block-tools g-3">
+                    <li>
+                        <a href="#" class="btn btn-white btn-dim btn-outline-primary" id="InQRCode"><em class="icon ni ni-printer"></em><span>In QR Code</span></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+}
+<div class="nk-block">
+    <div class="card card-bordered card-stretch">
+        <div class="card-inner-group">
+            <div class="card-inner position-relative ">
+                <div class="row justify-content-center">
+                    <div class="col-lg-2 col-sm-3">
+                        <div class="form-group">
+                            <label class="overline-title overline-title-alt form-label">Số PO</label>
+                            <div id="txt-sopo">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-sm-3">
+                        <div class="form-group">
+                            <label class="overline-title overline-title-alt form-label">Mã SKU</label>
+                            <div id="txt-masku">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-2 text-right">
+                        <label class="overline-title overline-title-alt form-label text-white">Filter</label>
+                        <div class="form-group "><button type="button" class="btn btn-secondary" onclick="LocDanhSach()">@Resources.Main.TimKiem</button></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-inner p-0">
+                <div id="gridContainer"></div>
+            </div>
+
+        </div>
+    </div>
+</div>
+@section CustomScripts{
+    <script type="text/javascript">
+        var SoPO = "", MaSKU = "", isLoadingAll = false;
+        $(function () {
+            $('#gridContainer').height($(window).height() - 350);
+            $("#txt-sopo").dxTextBox({
+                placeholder: "Nhập số PO"
+            });
+            $("#txt-masku").dxTextBox({
+                placeholder: "Nhập mã SKU"
+            });
+            LocDanhSach();
+        })
+
+        function LocDanhSach() {
+            SoPO = $("#txt-sopo").dxTextBox("instance").option('value');
+            MaSKU = $("#txt-masku").dxTextBox("instance").option('value');
+            $.get("@Url.Action("getDataInQRCoceTuChon", "PurchaseOrder")", { SoPO: SoPO,MaSKU:MaSKU})
+                    .done(function (result) {
+                        LoadDataGrid(result);
+                    })
+                    .fail(function (jqxhr, textStatus, error) {
+                        deferred.reject("Data Loading Error");
+                    });
+        }
+        function LoadDataGrid(dataSource) {
+
+                $("#gridContainer").dxDataGrid({
+                    dataSource: dataSource,
+                    selection: {
+                        mode: "multiple"
+                    },
+                    remoteOperations: {
+                        paging: true,
+                        filtering: true
+                    },
+                    editing: {
+                        allowUpdating: true,
+                        //allowAdding: true,
+                        //allowDeleting: false,
+                        mode: 'batch' // 'batch' | 'cell' | 'form' | 'popup'
+                    },
+                    filterRow: {
+                        visible: true,
+                        applyFilter: "auto"
+                    },
+                    paging: {
+                        pageSize: 10
+                    },
+                    showRowLines: true,
+                    rowAlternationEnabled: true,
+                    showBorders: true,
+                    hoverStateEnabled: true,
+                    allowColumnReordering: true,
+                    allowColumnResizing: true,
+                    columnAutoWidth: true,
+                    pager: {
+                        showPageSizeSelector: true,
+                        allowedPageSizes: [10, 15, 20, 50, 100],
+                        showInfo: true
+                    },
+                    columnFixing: {
+                        enabled: false
+                    },
+
+                    columns: [{
+                        dataField: "SoPO",
+                        caption: "Số PO",
+                        allowEditing: false, fixed: true,
+                    },
+
+                    {
+                        dataField: "SoLichGiaoHang",
+                        caption: "Số lịch giao hàng",
+                        allowEditing: false, fixed: true, visible: false
+
+                    },
+                    {
+                        dataField: "MaSanPham",
+                        caption: "Mã Hoàn Chỉnh",
+                        allowEditing: false, fixed: true, visible: false
+                    },
+                    {
+                        dataField: "MaChiTietSanPham",
+                        caption: "Mã Quản lý Kho",
+                         allowEditing: false, fixed: true
+                        },
+                        {
+                            dataField: "QRCode",
+                            caption: "Số cần in",
+                             fixed: true
+                        }    ,
+                    {
+                        dataField: "TenQuanLyKhoCIRS",
+                        caption: "Mô tải theo quản lý kho",
+                       allowEditing: false, fixed: true
+                    },
+                    {
+                        dataField: "DonViTinh",
+                        caption: "Đơn Vị Tính",
+                        allowEditing: false, visible: false
+                    },
+                    {
+                        dataField: "TongSo",
+                        caption: "Tổng số",
+                       allowEditing: false, fixed: true
+                        },
+
+                    {
+                        dataField: "QRCode",
+                        caption: "",
+                        width: 100,
+                        visible: false
+                    },
+                    {
+                        dataField: "ID",
+                        caption: "",
+                        width: 100,
+                        visible: false
+                    }
+                    ],
+                });
+            }
+
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#InQRCode").click(function () {
+                //var items = $('#gridContainer').dxDataGrid('instance').option("dataSource");
+                $("#gridContainer").dxDataGrid("instance").saveEditData().done(function (e) { });
+                var items = $('#gridContainer').dxDataGrid('instance');
+                var selectedRowsData = items.getSelectedRowsData();
+                data = {}
+                if (selectedRowsData.length > 0) {
+                    data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+                    data.list = selectedRowsData;
+                    $.post("@Url.Action("AddSessionQR1", "PurchaseOrder")", data)
+                    .done(function (rs) {
+                        if (rs.code = 1) {
+                            window.open(
+                                "/PurchaseOrder/ShowInQRCode1TuChon",
+                                '_blank' // <- This is what makes it open in a new window.
+                            );
+                        }
+                        else {
+                            showtoast(rs.text, 'error');
+                        }
+                    })
+                    .fail(function (jqxhr, textStatus, error) {
+                        deferred.reject("Data Loading Error");
+                    });
+                    //location.href = "/PurchaseOrder/ShowInQRCode1?SoPO=" + SoPO + "&ID=" + ID + "&SoLuong=" + SoLuong;
+                   
+                }
+            });
+        });
+    </script>
+}

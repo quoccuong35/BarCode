@@ -1,0 +1,421 @@
+﻿@model WMS.Models.PhieuNhapHang
+
+@{
+    ViewBag.Title = Resources.Menu.PhieuNhapHang;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string btnname = "btn_add", ncc = "null", TrangThai = "Đang tạo phiếu";
+    long IdPhieuNhapHang = 0;
+    if (Model.PNH.IdPhieuNhapHang > 0)
+    {
+        TrangThai = "Đang sửa phiếu";
+        btnname = "btn_update";
+        ncc = Model.PNH.IdNhaCungCap.ToString();
+        IdPhieuNhapHang = Model.PNH.IdPhieuNhapHang;
+        if (Model.PNH.TrangThai == 1)
+        {
+            TrangThai = "Khởi tạo";
+        }
+        else if (Model.PNH.TrangThai == 2)
+        {
+            TrangThai = "Đang quét";
+        }
+        else
+        {
+            TrangThai = "Hoàn thành";
+        }
+    }
+    int xuatxu = Model.PNH.VN.Value ? 2 : 1, mathang = Model.PNH.Go.Value ? 1 : 2;
+
+}
+@section Header{
+    <div class="nk-block-head-content">
+        <h3 class="nk-block-title page-title">@Resources.Menu.PhieuNhapHang</h3>
+        <div class="nk-block-des text-soft">
+            @if (Model.PNH.IdPhieuNhapHang > 0)
+            {
+                <p>@Resources.Menu.PhieuNhapHang #@Model.PNH.SoPhieu</p>
+            }
+            else
+            {
+                <p>Bạn đang thêm mới @Resources.Menu.PhieuNhapHang.</p>
+            }
+        </div>
+    </div>
+    <div class="nk-block-head-content">
+        <div class="toggle-wrap nk-block-tools-toggle">
+            <a href="#" class="btn btn-icon btn-trigger toggle-expand mr-n1" data-target="pageMenu"><em class="icon ni ni-more-v"></em></a>
+            <div class="toggle-expand-content" data-content="pageMenu">
+                <ul class="nk-block-tools g-3">
+                    @if ((User.IsInRole("0") || User.IsInRole("2=4")) && IdPhieuNhapHang > 0)
+                    {
+                        <li class="nk-block-tools-opt"><div id="btnXoa" class="btn btn-danger"><em class="icon dx-link dx-link-delete dx-icon-trash dx-link-icon"></em><span>@Resources.Main.Xoa</span></div></li>
+                    }
+                    @if (IdPhieuNhapHang > 0 && (User.IsInRole("0") || User.IsInRole("2=5")))
+                    {
+                        <li class="nk-block-tools-opt"><div id="DongPhieuNhap" class="btn btn-warning"><em class="icon ni ni-cc-off"></em><span>Đóng phiếu</span></div></li>
+                    }
+                    @if (IdPhieuNhapHang > 0 && (User.IsInRole("0") || User.IsInRole("2=6")))
+                    {
+                        <li class="nk-block-tools-opt"><div id="XuatFileExcel" class="btn btn-primary"><em class="icon ni ni-file-xls"></em><span>Xuất C.I.R.S</span></div></li>
+                    }
+                    @if (User.IsInRole("0") || User.IsInRole("2=2") || User.IsInRole("2=3"))
+                    {
+
+                        <li class="nk-block-tools-opt"><div id="@btnname" class="btn btn-primary"><em class="icon ni ni-save"></em><span>@Resources.Main.CapNhat</span></div></li>
+                    }
+                    @if (User.IsInRole("0") || User.IsInRole("2=2"))
+                    {
+                        <li>
+                            <a href="@Url.Action("PhieuNhap", "PhieuNhapHang")" class="btn btn-white btn-icon btn-outline-primary " data-toggle="tooltip" data-placement="top" title="Thêm mới @Resources.Menu.PhieuNhapHang.ToLower() khác"><em class="icon ni ni-plus"></em></a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+}
+<div class="nk-block">
+    <div class="card card-bordered card-stretch">
+        <div class="card-inner-group">
+            <div class="card-inner position-relative ">
+                <form id="inputform" data-parsley-validate>
+                    <div class="row gy-2">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="form-label">Số phiếu <b class="text-danger">*</b></label>
+                                <div class="form-control-wrap">
+                                    <div class="form-icon form-icon-left"><em class="icon ni ni-lock"></em></div>
+                                    <input type="text" class="form-control" id="SoPhieu" placeholder="Nhập số phiếu" value="@Model.PNH.SoPhieu" @{ViewContext.Writer.Write(Model.PNH.TrangThai > 1 ? "readonly" : "");} required data-parsley-length="[3, 20]" data-parsley-errors-container="#SoPhieuErrorContainer">
+                                </div>
+                                <!-- So phieu co icon nen tach rieng phan bao loi, neu ko co thi ko can-->
+                                <div id="SoPhieuErrorContainer">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label class="form-label">@Resources.Main.NhaCungCap <b class="text-danger">*</b></label>
+                                <div id="select-nhacungcap">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="form-label">Ngày giao hàng  <b class="text-danger">*</b></label>
+                                <div id="date-ngaygiaohang">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="form-label">Xuất xứ</label>
+                                <div id="radio-xuatxu">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label class="form-label">Mặt hàng</label>
+                                <div id="radio-mathang">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="form-label">Trạng thái</label>
+                                <div>
+                                    <em class="icon ni ni-edit-alt text-primary">@TrangThai</em> <i>  </i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            @if (IdPhieuNhapHang > 0)
+            {
+                <div class="card-inner position-relative ">
+                    <span class="preview-title-lg overline-title">Chi tiết phiếu nhập</span>
+                </div>
+                <div class="card-inner p-0">
+                    <div id="gridContainer"></div>
+                </div>
+            }
+
+        </div>
+    </div>
+</div>
+@section ScriptsFile{
+    <script src="~/Scripts/parsley.min.js"></script>
+}
+@section CustomScripts{
+    <script type="text/javascript">
+        var date = new Date();
+        var nguoidung = 1;
+        var json =  @Html.Raw(Json.Encode(@Model.PNHCT));
+        var dataSource = JSON.parse(JSON.stringify(json));
+        $(function () {
+
+            $("#date-ngaygiaohang").dxDateBox({
+                value: date,
+                width: '100%',
+                type: "datetime",
+                displayFormat: 'dd/MM/yyyy  HH:mm',
+               value:'@Model.PNH.NgayGiaoHang.Value.ToString("yyyy-MM-dd HH:mm:ss")',
+                onValueChanged: function (data) {
+                    tungay = Globalize.format(data.value, "yyyy-MM-dd");
+                },
+            }).dxDateBox("instance");
+            $("#radio-xuatxu").dxRadioGroup({
+                items: [{ id: 1, text: 'INTL' }, { id: 2, text: 'VN' }],
+                value: @xuatxu, valueExpr: "id", displayExpr: 'text',
+                layout: "horizontal"
+            });
+            $("#radio-mathang").dxRadioGroup({
+                items: [{ id: 1, text: 'FURNITURE / GỖ' }, { id: 2, text: 'ACCESSORY / PHỤ KIỆN' }],
+                value: @mathang,
+                valueExpr: "id", displayExpr:'text',
+                layout: "horizontal"
+            });
+            $("#gridContainer").dxDataGrid({
+                dataSource: dataSource,
+                showBorders: true,
+                paging: {
+                    pageSize: 10
+                },
+                pager: {
+                    showPageSizeSelector: true,
+                    allowedPageSizes: [5, 10, 20],
+                    showInfo: true
+                },
+                columns: [{
+                    dataField: "SoPO",
+                    caption: "Số WSO",
+                    width: 80,
+                    allowEditing: false
+                },
+                {
+                    dataField: "SoLichGiaoHang",
+                    caption: "Số lịch giao hàng",
+                    editorType: "dxTextArea",
+                    width: 100,
+                    allowEditing: false
+                },
+                {
+                    dataField: "MaSanPham",
+                    caption: "Mã hoàn chỉnh",
+                    width: 90
+                },
+                {
+                    dataField: "MaChiTietSanPham",
+                    caption: "Mã QLK",
+                    width: 90
+                },
+                {
+                    dataField: "TenChiTietSanPham",
+                    caption: "Tên Mô Tả",
+                    width: 420
+                },
+                {
+                    dataField: "SoLuong",
+                    caption: "Số Lượng",
+                    width: 80
+                },
+                {
+                    dataField: "DonViTinh",
+                    caption: "Đơn Vị Tính",
+                    width: 120
+                },
+                ],
+            });
+            $('#SoPhieu').change(function () {
+
+                 $.get('@Url.Action("CheckPhieuNhap", "PhieuNhapHang")', { id: '@Model.PNH.IdPhieuNhapHang', SoPhieu: this.value }).done(function (rs) {
+                        if (rs) {
+                            showtoast('Số phiếu nhập hàng đã tồn tại', 'error');
+
+                            $('#SoPhieu').focus();
+                        }
+                    });
+                });
+        });
+        $.get('@Url.Action("GetNhaCungCap","Data")', function (rs) {
+            $("#select-nhacungcap").dxDropDownBox({
+                dataSource: new DevExpress.data.ArrayStore({ key: "IdNhaCungCap", data: rs }),
+                valueExpr: "IdNhaCungCap",
+                deferRendering: false,
+                placeholder: "Chọn nhà cung cấp...",
+                displayExpr: function (item) {
+                    if (item)
+                        return " [" + item.MaNhaCungCap + "] " + item.TenNhaCungCap;
+                    else return null;
+                },
+                showClearButton: false,
+                value: @ncc,
+                onOpened: function (e) {
+                    var drw = 550;
+                    var popupInstance = e.element.find(".dx-popup").dxPopup("instance"); popupInstance.option('width', drw); popupInstance.off("optionChanged", optionChangedHandler); popupInstance.on("optionChanged", optionChangedHandler); function optionChangedHandler(args) { if (args.name == "width" && args.value < drw) { args.component.option("width", drw); } } e.component.getDataSource().reload();
+                },
+                contentTemplate: function (e) {
+                    var value = e.component.option("value"),
+                        $dataGrid = $("<div>").dxDataGrid({
+                            filterRow: {
+                                visible: true,
+                                applyFilter: "auto"
+                            },
+                            dataSource: e.component.getDataSource(),
+                            columns: [{ dataField: 'MaNhaCungCap', caption: 'Mã NCC' }, { dataField: 'TenNhaCungCap', caption: 'Nhà cung cấp' }],
+                            hoverStateEnabled: true, pager: { showPageSizeSelector: true, showInfo: true }, rowAlternationEnabled: true, showBorders: true, hoverStateEnabled: false, allowColumnReordering: true, allowColumnResizing: true, columnAutoWidth: true, selection: { mode: "single" }, selectedRowKeys: [value], height: "100%",
+                            onSelectionChanged: function (selectedItems) {
+                                var keys = selectedItems.selectedRowKeys, hasSelection = keys.length; e.component.option("value", hasSelection ? keys[0] : null); if (hasSelection) { e.component.close(); }
+                            }});
+                    dataGrid = $dataGrid.dxDataGrid("instance");
+                    e.component.on("valueChanged", function (args) {
+                        dataGrid.selectRows(args.value, false);
+                    });
+                    return $dataGrid;
+                }
+            }).dxValidator({ validationRules: [{ type: "required" }] });
+        });
+
+    </script>
+    @if (User.IsInRole("0") || User.IsInRole("2=2"))
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('#btn_add').click(function () {
+                    var validate = true;
+                    var ncc = $("#select-nhacungcap").dxDropDownBox("instance").option('value'),
+                        xuatxu = $("#radio-xuatxu").dxRadioGroup("instance").option('value'),
+                        mathang = $("#radio-mathang").dxRadioGroup("instance").option('value'),
+                        ngay = Globalize.format($("#date-ngaygiaohang").dxDateBox("instance").option('value'), 'yyyy-MM-dd HH:mm:ss');
+                    var dateTenp = new Date(ngay);
+                    var d = new Date();
+                    if (dateTenp > d) {
+                        alert("Ngày nhập phiếu tối đa là ngày hiện tại");
+                        return;
+                    }
+                    if (ncc == null) {
+                        $('#select-nhacungcap').dxValidator('instance').validate(); validate = false;
+                    }
+                    if ($('#inputform').parsley().validate() && validate) {
+                        var data = {};
+                        data.SoPhieu = $('#SoPhieu').val();
+                        data.IdNhaCungCap = ncc;
+                        data.NgayGiaoHang = ngay;
+                        data.INTL = xuatxu == 1 ? true : false;
+                        data.VN = xuatxu == 1 ? false : true;
+                        data.Go = mathang == 1 ? true : true;
+                        data.PhuKien = mathang == 1 ? false : true;
+                        data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+                        $.post('@Url.Action("ThemMoiPhieuNhapHang", "PhieuNhapHang")', data).done(function (rs) {
+                            if (rs.code > 0) {
+                                showtoast(rs.text, 'success');
+                                setTimeout(function () { window.location.href = '@Url.Action("PhieuNhap", "PhieuNhapHang")?id=' + data.SoPhieu }, 2000);
+                            }
+                            else {
+                                showtoast(rs.text, 'error');
+                            }
+
+                        });
+                    }
+                });
+            });
+        </script>
+    }
+    @if (User.IsInRole("0") || User.IsInRole("2=3"))
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('#btn_update').click(function () {
+                   var validate = true;
+                    var ncc = $("#select-nhacungcap").dxDropDownBox("instance").option('value'),
+                        xuatxu = $("#radio-xuatxu").dxRadioGroup("instance").option('value'),
+                        mathang = $("#radio-mathang").dxRadioGroup("instance").option('value'),
+                        ngay = Globalize.format($("#date-ngaygiaohang").dxDateBox("instance").option('value'), 'yyyy-MM-dd HH:mm:ss');
+                    if (ncc == null) {
+                        $('#select-nhacungcap').dxValidator('instance').validate(); validate = false;
+                    }
+                    if ($('#inputform').parsley().validate() && validate) {
+                        var data = {};
+                        data.SoPhieu = $('#SoPhieu').val();
+                        data.IdNhaCungCap = ncc;
+                        data.NgayGiaoHang = ngay;
+                        data.INTL = xuatxu == 1 ? true : false;
+                        data.VN = xuatxu == 1 ? false : true;
+                        data.Go = mathang == 1 ? true : true;
+                        data.PhuKien = mathang == 1 ? false : true;
+                        data.IdPhieuNhapHang =@Model.PNH.IdPhieuNhapHang;
+                        data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+                        $.post('@Url.Action("CapNhatPhieuNhapHang", "PhieuNhapHang")', data).done(function (rs) {
+                            if (rs.code > 0) {
+                                showtoast(rs.text, 'success');
+                            }
+                            else {
+                                showtoast(rs.text, 'error');
+                            }
+
+                        });
+                    }
+                });
+            });
+        </script>
+    }
+    @if (User.IsInRole("0") || User.IsInRole("2=4"))
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('#btnXoa').click(function () {
+                    var data = {};
+                        data.id = "@IdPhieuNhapHang"
+                        data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+                        $.post('@Url.Action("DelPhieuNhapHang", "PhieuNhapHang")', data).done(function (rs) {
+                            if (rs.code > 0) {
+                                showtoast(rs.text, 'success');
+                                setTimeout(function () { window.location.href = '@Url.Action("PhieuNhap", "PhieuNhapHang")?id=' + rs.data }, 2000);
+                            }
+                            else {
+                                showtoast(rs.text, 'error');
+                            }
+
+                        });
+                });
+            });
+        </script>
+    }
+
+
+    @if (User.IsInRole("0") || User.IsInRole("2=6"))
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $("#XuatFileExcel").click(function () {
+                    self.location = "/PhieuNhapHang/XuatPhieuNhap?id=" + "@IdPhieuNhapHang";
+                });
+            });
+        </script>
+    }
+    @if (User.IsInRole("0") || User.IsInRole("2=5"))
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('#DongPhieuNhap').click(function () {
+                    var data = {};
+                        data.id = "@IdPhieuNhapHang"
+                        data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+                        $.post('@Url.Action("DongPhieuNhap", "PhieuNhapHang")', data).done(function (rs) {
+                            if (rs.code > 0) {
+                                showtoast(rs.text, 'success');
+                                //setTimeout(function () { window.location.href = '@Url.Action("PhieuNhap", "PhieuNhapHang")?id=' + rs.data }, 2000);
+                            }
+                            else {
+                                showtoast(rs.text, 'error');
+                            }
+
+                        });
+                });
+            });
+            
+        </script>
+    }
+}
+

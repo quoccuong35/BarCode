@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XtraReportsLayoutSerializer SerializerVersion="20.1.3.0" Ref="0" ControlType="DevExpress.XtraReports.UI.XtraReport, DevExpress.XtraReports.v20.1, Version=20.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Name="Report1" Margins="30, 34, 15, 0" PageWidth="850" PageHeight="1100" Version="20.1" Font="Arial, 9.75pt">
+  <Bands>
+    <Item1 Ref="1" ControlType="TopMarginBand" Name="TopMargin" HeightF="15" />
+    <Item2 Ref="2" ControlType="DetailBand" Name="Detail" HeightF="220.961288">
+      <MultiColumn Ref="3" ColumnCount="3" Layout="AcrossThenDown" Mode="UseColumnCount" />
+      <Controls>
+        <Item1 Ref="4" ControlType="XRPanel" Name="panel1" SizeF="201.041672,203.0446" LocationFloat="9.99999,0" Borders="All">
+          <Controls>
+            <Item1 Ref="5" ControlType="XRBarCode" Name="barCode1" AutoModule="true" Alignment="MiddleLeft" TextAlignment="MiddleLeft" ShowText="false" SizeF="141.338577,170.12793" LocationFloat="27.7083378,6.00000668" Padding="0,0,0,0,100" Borders="None">
+              <Symbology Ref="6" Name="QRCode" CompactionMode="Byte" ErrorCorrectionLevel="M" />
+              <ExpressionBindings>
+                <Item1 Ref="7" EventName="BeforePrint" PropertyName="Text" Expression="[QRCodeKe]" />
+              </ExpressionBindings>
+              <StylePriority Ref="8" UsePadding="false" UseBorders="false" UseTextAlignment="false" />
+            </Item1>
+            <Item2 Ref="9" ControlType="XRLabel" Name="label1" Multiline="true" TextAlignment="TopCenter" SizeF="141.338577,23" LocationFloat="27.7083378,177.044647" Font="Arial, 16pt, style=Bold" Padding="2,2,0,0,100">
+              <ExpressionBindings>
+                <Item1 Ref="10" EventName="BeforePrint" PropertyName="Text" Expression="[MaKe]" />
+              </ExpressionBindings>
+              <StylePriority Ref="11" UseFont="false" UseTextAlignment="false" />
+            </Item2>
+          </Controls>
+          <StylePriority Ref="12" UseBorders="false" />
+        </Item1>
+      </Controls>
+    </Item2>
+    <Item3 Ref="13" ControlType="BottomMarginBand" Name="BottomMargin" HeightF="0" />
+  </Bands>
+</XtraReportsLayoutSerializer>

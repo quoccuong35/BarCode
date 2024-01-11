@@ -1,0 +1,271 @@
+﻿
+@{
+
+    ViewBag.Title = "Danh sách Theo Dõi Phiếu Nhập Kệ Hàng Trắng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@section Header{
+    <div class="nk-block-head-content">
+        <h3 class="nk-block-title page-title">Danh sách chi tiết hàng trắng trong kho</h3>
+    </div>
+    @*<div class="nk-block-head-content">
+        <div class="toggle-wrap nk-block-tools-toggle">
+            <a href="#" class="btn btn-icon btn-trigger toggle-expand mr-n1" data-target="pageMenu"><em class="icon ni ni-more-v"></em></a>
+            <div class="toggle-expand-content" data-content="pageMenu">
+                <ul class="nk-block-tools g-3">
+                    @if (User.IsInRole("0") || User.IsInRole("5=6"))
+                    {
+                        <li>
+                            <a href="#" class="btn btn-white btn-dim btn-outline-primary" id="XuatExcel" onclick="ExportXLS()"><em class="icon ni ni-download-cloud"></em><span>@Resources.Main.XuatFile</span></a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>*@
+
+}
+
+
+<div class="nk-block">
+    <div class="card card-bordered card-stretch">
+        <div class="card-inner-group">
+            <div class="card-inner position-relative ">
+                <div class="row justify-content-center">
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label class="overline-title overline-title-alt form-label">Kệ hàng</label>
+                            <div id="select-kehang">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-3">
+                        <div class="form-group">
+                            <label class="overline-title overline-title-alt form-label">Mã SP</label>
+                            <div id="txt-masp">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-3">
+                        <div class="form-group">
+                            <label class="overline-title overline-title-alt form-label">Mã SKU</label>
+                            <div id="txt-masku">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-3">
+                        <label class="overline-title overline-title-alt form-label text-white">@Resources.Main.TimKiem</label>
+                        <div class="form-group "><button type="button" class="btn btn-secondary" onclick="Refresh()">@Resources.Main.TimKiem</button></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-inner p-0">
+                <div style="padding-top:0;margin-top:0" id="danh-sach">
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="loadpanel"></div>
+
+
+
+@section CustomScripts{
+
+    <script type="text/javascript">
+        var maKe = null;
+        var maSKU = null;
+        var masp = null;
+        var loadPanel = $(".loadpanel").dxLoadPanel({
+            shadingColor: "rgba(0,0,0,0.4)",
+            visible: false,
+            showIndicator: true,
+            showPane: true,
+            shading: true,
+            message: 'Loading..',
+            closeOnOutsideClick: false,
+        }).dxLoadPanel("instance");
+
+        $(function () {
+            try {
+               // loadPanel.show();
+                $("#txt-masku").dxTextBox({
+                    placeholder: "Nhập mã SKU"
+                });
+                $("#txt-masp").dxTextBox({
+                    placeholder: "Nhập mã SP"
+                });
+                $('#danh-sach').height($(window).height() - 250);
+                $.get('@Url.Action("GetKeHang", "Data")', function (rs) {
+                // $("#select-nhacungcap").dxSelectBox("instance").option('value', 0);
+                 listKe = rs;
+                 $("#select-kehang").dxDropDownBox({
+
+                     dataSource: new DevExpress.data.ArrayStore({ key: "IdKe", data: listKe }),
+                     valueExpr: "IdKe",
+                     deferRendering: false,
+                     placeholder: "Chọn kệ hàng...",
+                     displayExpr: function (item) {
+                         //return " [" + item.MaKe + "] " + item.TenKe;
+                         return item.TenKe;
+                     },
+                     showClearButton: true,
+                     onOpened: function (e) {
+                         var drw = 550;
+                         var popupInstance = e.element.find(".dx-popup").dxPopup("instance"); popupInstance.option('width', drw); popupInstance.off("optionChanged", optionChangedHandler); popupInstance.on("optionChanged", optionChangedHandler); function optionChangedHandler(args) { if (args.name == "width" && args.value < drw) { args.component.option("width", drw); } } e.component.getDataSource().reload();
+                     },
+                     contentTemplate: function (e) {
+                         var value = e.component.option("value"),
+                             $dataGrid = $('<div class="wms-grid">').dxDataGrid({
+                                 id:"Comboboxtest",
+                                 dataSource: e.component.getDataSource(),
+                                 filterRow: {
+                                     visible: true,
+                                     applyFilter: "auto"
+                                 },
+                                 selection: { mode: "multiple" },
+
+                                 columns: [{ dataField: 'MaKe', caption: 'Kệ' }],
+                                 hoverStateEnabled: true, pager: { showPageSizeSelector: true, showInfo: true }, rowAlternationEnabled: true, showBorders: true, allowColumnReordering: true, allowColumnResizing: true, columnAutoWidth: true, selectedRowKeys: [value], height: "100%",
+                                 onSelectionChanged: function (selectedItems) {
+                                     var keys = selectedItems.selectedRowKeys;
+                                     e.component.option("value", keys);
+                                 }
+                             });
+
+                         dataGrid = $dataGrid.dxDataGrid("instance");
+                         e.component.on("valueChanged", function (args) {
+                             dataGrid.selectRows(args.value, false);
+                         });
+                         return $dataGrid;
+                     }
+                 });
+                });
+            }
+            catch (e) {
+                loadPanel.hide();
+                alert(e);
+            }
+        });
+
+        function Refresh() {
+            var temp = $("#select-kehang").dxDropDownBox("instance").option('value');
+            maSKU = $("#txt-masku").dxTextBox("instance").option('value');
+            maSP = $("#txt-masp").dxTextBox("instance").option('value');
+            maKe = "";
+            if (temp.length > 0) {
+                for (var i = 0; i < temp.length; i++) {
+                    maKe = maKe + temp[i] + ",";
+                }
+            }
+            if (maKe.length > 0) {
+                maKe = maKe.substring(0, maKe.length - 1);
+            }
+            loadReport();
+        }
+        function loadReport()
+        {
+            loadPanel.show();
+            $.get('@Url.Action("GetBaoCaoChiTietKhoHangTrang", "BaoCao")',
+                { MaKe: maKe, MaSKU: maSKU, MaSP: masp }).done(function (rs) {
+                if (rs.code == 1) {
+
+                    $("#danh-sach").dxDataGrid({
+                        dataSource: rs.data,
+                        remoteOperations: {
+                            paging: true,
+                            filtering: true
+                        },
+                        filterRow: {
+                            visible: true,
+                            applyFilter: "auto"
+                        },
+                        headerFilter: {
+                            visible: true,
+                            allowSearch: true
+                        },
+                        paging: {
+                            pageSize: 10
+                        },
+                        columnFixing: {
+                            enabled: true
+                        },
+                        export: {
+                            enabled: true
+                        },
+                        showRowLines: true,
+                        rowAlternationEnabled: true,
+                        showBorders: true,
+                        hoverStateEnabled: true,
+                        allowColumnReordering: true,
+                        allowColumnResizing: true,
+                        columnAutoWidth: true,
+                        pager: {
+                            showPageSizeSelector: true,
+                            allowedPageSizes: [10, 15, 20, 50, 100],
+                            showInfo: true,
+                        },
+                        columns: [
+                            {
+                                dataField: "SoPO",
+                                caption: "Số PO",
+                                editorType: "dxTextArea",
+                                fixed: true,
+                            },
+                            {
+                                dataField: "MaSanPham",
+                                caption: "Mã SP",
+                                editorType: "dxTextArea",
+                                fixed: true,
+                            },
+                            {
+                                dataField: "MaChiTietSanPham",
+                                caption: "Mã Hàng SKU",
+                                // width: 90,
+                                fixed: true,
+                            },
+                            {
+                                dataField: "TenChiTietSanPham",
+                                caption: "Mô Tả",
+                                // width: 220,
+                                fixed: true,
+                            },
+                            {
+                                dataField: "MaKe",
+                                caption: "Mã kệ",
+                                allowEditing: false,
+                                fixed: true,
+                            },
+                            {
+                                dataField: "NumberOf",
+                                caption: "Số OF",
+                                fixed: true,
+                            },
+                             {
+                                dataField: "TinhTrang",
+                                caption: "Tình trạng",
+                                fixed: true,
+                            }
+                        ],
+                    });
+                    loadPanel.hide();
+                }
+                else
+                {
+                    loadPanel.hide();
+                    showtoast(rs.text, 'error');
+                }
+            }).fail(function () {
+                loadPanel.hide();
+            });
+             
+        }
+      
+    </script>
+}

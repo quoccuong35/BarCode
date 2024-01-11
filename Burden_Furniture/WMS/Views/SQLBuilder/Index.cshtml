@@ -1,0 +1,178 @@
+﻿
+@{
+    ViewBag.Title = "SQLBuilder";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/Content/js/lib/codemirror.css" rel="stylesheet" />
+<link href="~/Content/js/lib/lucario.css" rel="stylesheet" />
+
+@section Header{
+    <div class="nk-block-head-content">
+        <h3 class="nk-block-title page-title">SQLBuilder</h3>
+
+    </div>
+    <div class="nk-block-head-content">
+        <div class="toggle-wrap nk-block-tools-toggle">
+            <a href="#" class="btn btn-icon btn-trigger toggle-expand mr-n1" data-target="pageMenu"><em class="icon ni ni-more-v"></em></a>
+            <div class="toggle-expand-content" data-content="pageMenu">
+                <ul class="nk-block-tools g-3">
+                    <li class="nk-block-tools-opt"><div id="proc"></div></li>
+                    <li class="nk-block-tools-opt"><div id="btnname" class="btn btn-primary"><em class="icon ni ni-save"></em><span>@Resources.Main.CapNhat</span></div></li>
+                    <li>
+                        <a href="javascript: void(0);" onclick="themmoi()" class="btn btn-white btn-icon btn-outline-primary " data-toggle="tooltip" data-placement="top" title="Thêm tham số mới"><em class="icon ni ni-plus"></em></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+}
+<div class="nk-block">
+    <div class="card card-bordered card-stretch">
+        <div class="card-inner-group">
+            <div class="card-inner">
+                <textarea id="iQuery" style="display:none"></textarea>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" tabindex="-1" id="themmoi">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Thêm mới tham số</h5>
+                <a href="#" class="close" data-dismiss="modal" aria-label="Close"><em class="icon ni ni-cross"></em></a>
+            </div>
+            <div class="modal-body">
+                <form id="inputform" data-parsley-validate>
+                    <div class="form-group">
+                        <label class="form-label">Key <b class="text-danger">*</b></label>
+                        <div class="form-control-wrap">
+
+                            <input type="text" class="form-control" id="Id" placeholder="Nhập Id tham số" required>
+                        </div>
+
+
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Name <b class="text-danger">*</b></label>
+                        <div class="form-control-wrap">
+
+                            <input type="text" class="form-control" id="Name" placeholder="Nhập tên tham số" required>
+                        </div>
+
+
+                    </div>
+                </form>
+              
+            </div>
+            <div class="modal-footer bg-light"><div id="btnadd" class="btn btn-primary"><em class="icon ni ni-save"></em><span>@Resources.Main.CapNhat</span></div></div>
+        </div>
+    </div>
+</div>
+@section ScriptsFile{
+    <script src="~/Content/js/lib/codemirror.js"></script>
+
+    <script src="~/Content/js/lib/sql.js"></script>
+    <script src="~/Content/js/lib/matchbrackets.js"></script>
+    <script src="~/Scripts/parsley.min.js"></script>
+}
+@section CustomScripts{
+    <script type="text/javascript">
+        var thamso = ''; var editor;
+        function themmoi() {
+            $('#themmoi').modal('show');
+        }
+        $(function () {
+             editor = CodeMirror.fromTextArea(document.getElementById("iQuery"), {
+                mode: "text/x-mysql",
+                height: '450px',
+                lineNumbers: true, indentWithTabs: true,
+                smartIndent: true,
+                lineNumbers: true,
+                matchBrackets: true,
+                autofocus: true,
+                theme: 'lucario'
+            });
+            $('.CodeMirror').height($(window).height() - 250);
+            $('#btnname').click(function () {
+                $.post('@Url.Action("Update", "SQLBuilder")', { id: thamso, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val(), sql: editor.getDoc().getValue("\n") }, function (r) {
+                    if (r != null) {
+                        showtoast('Cập nhật thành công', 'success');
+                    }
+                });
+
+            });
+            loadProc();
+            $('#btnadd').click(function () {
+                if ($('#inputform').parsley().validate()) {
+                    var data = {};
+                    data.Id = $('#Id').val();
+                    data.Name = $('#Name').val();
+                    data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+                    $.post('@Url.Action("ThemMoiThamSo", "SQLBuilder")', data).done(function (rs) {
+                        if (rs.code > 0) {
+                            showtoast(rs.text, 'success');
+                            thamso = $('#Id').val();
+                            loadProc();
+                            $('#themmoi').modal('hide');
+                        }
+                        else {
+                            showtoast(rs.text, 'error');
+                        }
+
+                    });
+                }
+            });
+        });
+        function loadProc() {
+
+            $.post('@Url.Action("GetProc", "SQLBuilder")', { __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() }, function (rs) {
+
+                $("#proc").dxDropDownBox({
+                    dataSource: new DevExpress.data.ArrayStore({ key: "Id", data: rs }),
+                    valueExpr: "Id",
+                    deferRendering: false,
+                    placeholder: "Chọn tham số...",
+                    displayExpr: 'name',
+                    width: 350,
+                    showClearButton: false,
+                    value: thamso,
+                    onOpened: function (e) {
+                        var drw = 550;
+                        var popupInstance = e.element.find(".dx-popup").dxPopup("instance"); popupInstance.option('width', drw); popupInstance.off("optionChanged", optionChangedHandler); popupInstance.on("optionChanged", optionChangedHandler); function optionChangedHandler(args) { if (args.name == "width" && args.value < drw) { args.component.option("width", drw); } } e.component.getDataSource().reload();
+                    },
+                    contentTemplate: function (e) {
+                        var value = e.component.option("value"),
+                            $dataGrid = $('<div class="wms-grid">').dxDataGrid({
+                                dataSource: e.component.getDataSource(),
+                                columns: [{ dataField: 'Id', caption: 'Key' }, { dataField: 'name', caption: 'Name' }],
+                                hoverStateEnabled: true, pager: { showPageSizeSelector: true, showInfo: true }, rowAlternationEnabled: true, showBorders: true, hoverStateEnabled: false, allowColumnReordering: true, allowColumnResizing: true, columnAutoWidth: true, selection: { mode: "single" }, selectedRowKeys: [value], height: "100%",
+                                onSelectionChanged: function (selectedItems) {
+                                    var keys = selectedItems.selectedRowKeys, hasSelection = keys.length; e.component.option("value", hasSelection ? keys[0] : null); if (hasSelection) { e.component.close(); }
+                                }
+                            });
+                        dataGrid = $dataGrid.dxDataGrid("instance");
+                        e.component.on("valueChanged", function (args) {
+                            dataGrid.selectRows(args.value, false);
+                        });
+                        return $dataGrid;
+                    },
+                    onValueChanged: function (e) {
+                        thamso = e.value;
+                        load();
+                    }
+                });
+            });
+
+            }
+            function load() {
+                $.post('@Url.Action("GetSQL", "SQLBuilder")', { id: thamso, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() }, function (r) {
+                    if (r.SQL != null) {
+                        editor.setValue(r.SQL);
+                    }
+                });
+            }
+    </script>
+
+}

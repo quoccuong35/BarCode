@@ -1,0 +1,526 @@
+﻿@using WMS.Models;
+@model PO
+@{
+    ViewBag.Title = Resources.Main.DonDatHang;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string btnname = "btn_add", ncc = "null";
+    string TrangThai = " thêm mới ";
+    long IDPO = Model.ThongTinPO.IDPO;
+    bool bEdit = false, bDel = false, bAdd = false;
+    if (User.Identity.Name == "pm.inven" || @User.IsInRole("0"))
+    {
+        bEdit = true;
+    }
+    if (@User.IsInRole("1=4") || @User.IsInRole("0"))
+    {
+        bDel = true;
+    }
+    if (IDPO > 0)
+    {
+        ncc = Model.ThongTinPO.IdNhaCungCap.ToString();
+        TrangThai = "sửa ";
+        btnname = "btn_update";
+        if (@User.IsInRole("1=3") || @User.IsInRole("0"))
+        {
+            bAdd = true;
+        }
+
+    }
+}
+@section Header{
+    <div class="nk-block-head-content">
+        <h3 class="nk-block-title page-title">@Resources.Main.DonDatHang</h3>
+        <div class="nk-block-des text-soft">
+            <p>Bạn đang @TrangThai @Resources.Main.DonDatHang.</p>
+        </div>
+    </div>
+    <div class="nk-block-head-content">
+        <div class="toggle-wrap nk-block-tools-toggle">
+            <a href="#" class="btn btn-icon btn-trigger toggle-expand mr-n1" data-target="pageMenu"><em class="icon ni ni-more-v"></em></a>
+            <div class="toggle-expand-content" data-content="pageMenu">
+                <ul class="nk-block-tools g-3">
+                    @if (User.IsInRole("0") || User.IsInRole("1=4") && IDPO > 0)
+                    {
+                        <li class="nk-block-tools-opt"><div id="btnXoa" class="btn btn-danger"><em class="icon dx-link dx-link-delete dx-icon-trash dx-link-icon"></em><span>@Resources.Main.Xoa</span></div></li>
+                    }
+                    @if (User.IsInRole("0") || User.IsInRole("1=2") || User.IsInRole("1=3"))
+                    {
+                        <li class="nk-block-tools-opt"><div id="@btnname" class="btn btn-primary"><em class="icon ni ni-save"></em><span>@Resources.Main.CapNhat</span></div></li>
+                    }
+                    @if (User.IsInRole("0") || User.IsInRole("1=2"))
+                    {
+                        <li class="nk-block-tools-opt"><div id="btnXuatFileMau" class="btn btn-primary"><em class="icon ni ni-file-xls"></em><span>File mẫu</span></div></li>
+                        <li>
+                            <a href="@Url.Action("PhieuNhapPO", "PurchaseOrder")" class="btn btn-white btn-icon btn-outline-primary " data-toggle="tooltip" data-placement="top" title="Thêm mới @Resources.Main.DonDatHang.ToLower() khác"><em class="icon ni ni-plus"></em></a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+}
+<div class="nk-block">
+    <div class="card card-bordered card-stretch">
+        <div class="card-inner-group">
+            <div class="card-inner position-relative ">
+                <form id="inputform" data-parsley-validate>
+                    <div class="row gy-2">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label class="form-label">@Resources.Main.NhaCungCap <b class="text-danger">*</b></label>
+                                <div id="select-nhacungcap">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="form-label">Số hợp đồng</label>
+                                <div class="form-control-wrap">
+                                    <div class="form-icon form-icon-left"><em class="icon ni ni-lock"></em></div>
+                                    <input type="text" class="form-control" id="sohopdong" placeholder="Nhập số hợp đồng" value="@Model.ThongTinPO.SoHopDong">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="form-label">Số PO <b class="text-danger">*</b></label>
+                                <div class="form-control-wrap">
+                                    <div class="form-icon form-icon-left"><em class="icon ni ni-lock"></em></div>
+                                    <input type="text" class="form-control" id="sopo" placeholder="Nhập số PO" value="@Model.ThongTinPO.SoPO" @{ViewContext.Writer.Write(Model.ThongTinPO.IDPO > 0 ? "readonly" : "");} required data-parsley-length="[3, 20]" data-parsley-errors-container="#sopoErrorContainer">
+                                </div>
+                                <!-- So phieu co icon nen tach rieng phan bao loi, neu ko co thi ko can-->
+                                <div id="sopoErrorContainer">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row gy-2">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="form-label">Ngày phát hành  <b class="text-danger">*</b></label>
+                                <div id="date-ngayphathanh">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="form-label">Số lịch giao hàng <b class="text-danger">*</b></label>
+                                <div class="form-control-wrap">
+                                    <div class="form-icon form-icon-left"><em class="icon ni ni-lock"></em></div>
+                                    <input type="text" class="form-control" id="solichgiaohang" placeholder="Nhập số lịch giao hàng" value="@Model.ThongTinPO.SoLichGiaoHang" @{ViewContext.Writer.Write(Model.ThongTinPO.IDPO > 0 ? "readonly" : "");} required data-parsley-length="[3, 20]" data-parsley-errors-container="#solichgiaohangErrorContainer">
+                                </div>
+                                <!-- So phieu co icon nen tach rieng phan bao loi, neu ko co thi ko can-->
+                                <div id="solichgiaohangErrorContainer">
+
+                                </div>
+                            </div>
+                        </div>
+
+                        @*<div class="col-lg-3">
+                                <div class="form-group">
+                                    <label class="form-label">Trạng thái</label>
+                                    <div>
+                                        <em class="icon ni ni-edit-alt text-primary"></em> <i> "@TrangThai"</i>
+                                    </div>
+                                </div>
+                            </div>*@
+                    </div>
+                </form>
+            </div>
+            <div class="card-inner position-relative ">
+                <span class="preview-title-lg overline-title">Chi tiết đơn đặt hàng</span>
+                @{
+                    if (IDPO == 0 && (User.IsInRole("0") || User.IsInRole("1=2")))
+                    {
+                        <span>File danh sách po chi tiết <input type="file" name="UploadedFile" id="UploadedFile" @{ViewContext.Writer.Write(Model.ThongTinPO.IDPO > 0 ? "disabled" : "");} /></span>
+                        <button type="submit" class="btn btn-primary" onclick="LayDanhSachExcel()" name="Command" value="Import" @{ViewContext.Writer.Write(Model.ThongTinPO.IDPO > 0 ? "disabled" : "");}>Lấy danh sách từ excel</button>
+                    }
+                }
+
+            </div>
+            <div class="card-inner p-0">
+                <div id="gridContainer"></div>
+            </div>
+        </div>
+    </div>
+</div>
+@section ScriptsFile{
+    <script src="~/Scripts/parsley.min.js"></script>
+}
+@section CustomScripts{
+    <script type="text/javascript">
+    var date = new Date();
+    var Columns  = {};
+    $(function () {
+
+        $("#date-ngayphathanh").dxDateBox({
+                    value: date,
+            width: '100%',
+            type: "date",
+            displayFormat: 'dd/MM/yyyy',
+            value:'@Model.ThongTinPO.NgayGocPhatHanh.Value.ToString("yyyy-MM-dd")',
+            onValueChanged: function (data) {
+                            tungay = Globalize.format(data.value, "yyyy-MM-dd");
+                        },
+        }).dxDateBox("instance");
+        $.get('@Url.Action("GetNhaCungCap","Data")', function (rs) {
+            $("#select-nhacungcap").dxDropDownBox({
+                        dataSource: new DevExpress.data.ArrayStore({ key: "IdNhaCungCap", data: rs }),
+                valueExpr: "IdNhaCungCap",
+                deferRendering: false,
+                placeholder: "Chọn nhà cung cấp...",
+                displayExpr: function (item) {
+                                if (item)
+                                    return " [" + item.MaNhaCungCap + "] " + item.TenNhaCungCap;
+                                else return null;
+                            },
+                showClearButton: false,
+                value: @ncc,
+                onOpened: function (e) {
+                                var drw = 550;
+                                var popupInstance = e.element.find(".dx-popup").dxPopup("instance"); popupInstance.option('width', drw); popupInstance.off("optionChanged", optionChangedHandler); popupInstance.on("optionChanged", optionChangedHandler); function optionChangedHandler(args) { if (args.name == "width" && args.value < drw) { args.component.option("width", drw); } } e.component.getDataSource().reload();
+                            },
+                contentTemplate: function (e) {
+                                var value = e.component.option("value"),
+                                    $dataGrid = $("<div>").dxDataGrid({
+                                        dataSource: e.component.getDataSource(),
+                                        filterRow: {
+                                            visible: true,
+                                            applyFilter: "auto"
+                                        },
+                            columns: [{ dataField: 'MaNhaCungCap', caption: 'Mã NCC' }, { dataField: 'TenNhaCungCap', caption: 'Nhà cung cấp' }],
+                            hoverStateEnabled: true, pager: { showPageSizeSelector: true, showInfo: true }, rowAlternationEnabled: true, showBorders: true, hoverStateEnabled: false, allowColumnReordering: true, allowColumnResizing: true, columnAutoWidth: true, selection: { mode: "single" }, selectedRowKeys: [value], height: "100%",
+                            onSelectionChanged: function (selectedItems) {
+                                        var keys = selectedItems.selectedRowKeys, hasSelection = keys.length; e.component.option("value", hasSelection ? keys[0] : null); if (hasSelection) { e.component.close(); }
+                                    }});
+                                dataGrid = $dataGrid.dxDataGrid("instance");
+                                e.component.on("valueChanged", function (args) {
+                                    dataGrid.selectRows(args.value, false);
+                                });
+                                return $dataGrid;
+                            }
+                        }).dxValidator({ validationRules: [{ type: "required" }] });
+                    });
+        var json =  @Html.Raw(Json.Encode(@Model.POChiTiet));
+                    Columns = JSON.parse(JSON.stringify(json));
+        LoadData(Columns)
+    });
+
+    function LoadData(data)
+    {
+        $("#gridContainer").dxDataGrid({
+           dataSource: data,
+            showBorders: true,
+            paging: {
+               pageSize: 10
+            },
+            onBeforeSend: function (method, ajaxOptions) {
+                ajaxOptions.xhrFields = { withCredentials: true };
+            },
+            editing: {
+                        mode: "popup",
+                        allowUpdating: "@bEdit" == "True" ? true : false,
+                        allowDeleting: "@bDel" == "True" ? true : false,
+                        allowAdding: "@bAdd" == "True" ? true : false,
+                        useIcons: true,
+                        form: {
+                            labelLocation: "top"
+                        },
+                        popup: {
+                            title: "Thông tin đơn hàng chi tiết",
+                            showTitle: true,
+                            width: 700,
+                            height: 525,
+                            position: {
+                                my: "top",
+                                at: "top",
+                                of: window
+                            }
+                        }
+             },
+            pager: {
+                showPageSizeSelector: true,
+                allowedPageSizes: [5, 10, 20],
+                showInfo: true
+            },
+            keyExpr: "ID",
+            columns: [{
+                dataField: "MaSanPham",
+                width: 100,
+                caption: "Mã Hoàn Chỉnh", fixed: true,
+                validationRules: [{ type: "required" }]
+            }, {
+                dataField: "MaChiTietSanPham", fixed: true,
+                width: 90,
+                caption: "Mã QLK",
+                    validationRules: [{ type: "required" },
+                    {
+                        type: "async",
+                        message: "Mã QLK đã thêm không thể thêm",
+                        validationCallback: function (params) {
+                            return $.ajax({
+                                url: '@Url.Action("ChecMaChiTiet", "PurchaseOrder")',
+                                type: 'POST',
+                                dataType: 'json',
+                                contentType: 'application/json',
+                                data: JSON.stringify({
+                                    idPO: "@IDPO",
+                                    id: params.data.ID,
+                                    MaChiTietSanPham: params.value
+                                })
+                            });
+                        }
+                     }]
+            }
+               , {
+                   dataField: "TenChiTietSanPham",
+                   width: 400,
+                   caption: "Tên tiếng việt", fixed: true,
+                   validationRules: [{ type: "required" }]
+                   //allowEditing: false
+                }
+                , {
+                    dataField: "TenQuanLyKhoCIRS",
+                    width: 400,
+                    caption: "Tên tiếng anh",
+                    validationRules: [{ type: "required" }]
+                    //allowEditing: false
+                }
+                , {
+                    dataField: "DonViTinh",
+                    width: 90,
+                    caption: "Đơn vị tính",
+                    validationRules: [{ type: "required" }]
+                    //allowEditing: false
+                }
+               , {
+                   dataField: "SoLuongTrongMoiBo",
+                   width: 100,
+                   caption: "SL Trong Bộ",
+                   validationRules: [{ type: "required" }]
+                   //allowEditing: true,
+               }, {
+                   dataField: "SoLuongPO",
+                   width: 70,
+                   caption: "SL PO",
+                   dataType: 'number',
+                   validationRules: [{
+                       type: "required"
+                   }, {
+                           type: "custom",
+                           message: "Số lượng không hợp lệ",
+                           validationCallback: function (options) {
+  
+                               var value = options.value;
+                               var result = true;
+                               if (value == null || value <= 0) {
+                                   result = false;
+                               }
+
+                               //set result based on rowData
+                               return result;
+                           }
+                       }]
+                   /// allowEditing: true
+               }
+            ],
+            onRowUpdating: function (e) {
+                if (e.key > 0)
+                {
+                    EditPOChiTiet(e.newData, e.key);
+                }
+
+            },
+            onRowRemoving: function (e) {
+                if (e.key > 0) {
+                    DelPOChiTiet(e.key);
+                }
+            },
+            onRowInserting: function (e) {
+                AddPoChiTiet(e);
+            },
+
+        });
+    }
+        function AddPoChiTiet(item) {
+            var b = true; var Loi = "";
+            try {
+                var data = {};
+
+                data.MaSanPham = item.data.MaSanPham
+                data.MaChiTietSanPham = item.data.MaChiTietSanPham
+                data.TenChiTietSanPham = item.data.TenChiTietSanPham
+                data.SoLuongTrongMoiBo = item.data.SoLuongTrongMoiBo
+                data.SoLuongPO = item.data.SoLuongPO
+                data.IDPO = "@IDPO"
+                data.SoPO = $("#sopo").val();
+                data.SoLichGiaoHang = $("#solichgiaohang").val();
+                data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+
+                $.post('@Url.Action("ThemPOChiTiet", "PurchaseOrder")', data).done(function (rs) {
+                    if (rs.code == "1") {
+                        LoadData(rs.data)
+                        showtoast(rs.text, 'success');
+                    }
+                    else {
+                        showtoast(rs.text, 'error');
+                    }
+
+                }).fail(function() {
+
+                });
+            }
+            catch (err) {
+                item.cancel = true;
+            }
+
+        }
+
+      function EditPOChiTiet(newData,ID)
+        {
+          var data = {};
+          data["ID"] = ID;
+          data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+            var arryPropertyName = Object.getOwnPropertyNames(newData);
+            for (var i = 0; i < arryPropertyName.length; i++) {
+                data[arryPropertyName[i]] = newData[arryPropertyName[i]].toString()
+            }
+            $.post('@Url.Action("EditChiTietPO", "PurchaseOrder")', data).done(function (rs) {
+                if (rs[0] == "1") {
+                    showtoast(rs[1], 'success');
+                }
+                else {
+                    showtoast(rs[1], 'error');
+                }
+
+            }).fail(function() {
+                alert( "error" );
+            });
+        }
+        function DelPOChiTiet(id) {
+            //var oldData = e.l
+            $.post('@Url.Action("DelPOChiTiet", "PurchaseOrder")', {id:id}).done(function (rs) {
+                if (rs[0] == "1") {
+                    showtoast(rs[1], 'success');
+                }
+                else {
+                    LoadData(Columns);
+                    showtoast(rs[1], 'error');
+                }
+
+            }).fail(function () {
+                alert("error");
+            });
+        }
+    function LayDanhSachExcel()
+    {
+        var files  = $("#UploadedFile").get(0).files;
+        var formData = new FormData();
+        formData.append('importFile', files[0]);
+        $.ajax({
+            url: '/PurchaseOrder/LayFileExcel',
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (rs) {
+                if (rs.code == 1) {
+                    Columns = rs.data;
+                    LoadData(Columns);
+                }
+                else {
+                    Columns = {}
+                    LoadData(Columns);
+                    showtoast(rs.text,'error');
+                }
+            },
+            error: function (err) {
+                toastr.error("Lỗi hệ thống liên hệ nhà quản trị để được hỗ trợ");
+            }
+        });
+    }
+
+
+    function XuatFileMau() {
+        self.location = "/PurchaseOrder/XuatFileMau";
+    }
+    </script>
+    @if (User.IsInRole("0") || User.IsInRole("1=2"))
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('#btn_add').click(function () {
+                    var validate = true;
+                    var ncc = $("#select-nhacungcap").dxDropDownBox("instance").option('value'),
+                        ngay = Globalize.format($("#date-ngayphathanh").dxDateBox("instance").option('value'), 'yyyy-MM-dd');
+
+                    if (ncc == null) {
+                        $('#select-nhacungcap').dxValidator('instance').validate(); validate = false;
+                    }
+                    var dataItems = $('#gridContainer').dxDataGrid('instance').option("dataSource")  ;
+                    if (dataItems.length == 0) {
+                        validate = false;
+                        showtoast("Chưa thêm chi tiết phiếu nhập", 'error');
+                    }
+                    var dateTenp = new Date(ngay);
+                    var d = new Date();
+                    if (dateTenp > d) {
+                        alert("Ngày phát hành đối đa là ngày hiện tại");
+                        return;
+                    }
+                    if ($('#inputform').parsley().validate() && validate) {
+                        var data = {};
+                        data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+                        data.SoPO = $("#sopo").val();
+                        data.SoLichGiaoHang = $("#solichgiaohang").val();
+                        data.SoHopDong = $("#sohopdong").val();
+                        data.IdNhaCungCap = ncc;
+                        data.NgayGocPhatHanh = ngay;
+                        data.columns = dataItems;
+                        data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+                        $.post('@Url.Action("ThemPO", "PurchaseOrder")', data).done(function (rs) {
+                            if (rs.code > 0) {
+                                showtoast(rs.text, 'success');
+                                setTimeout(function () { window.location.href = '@Url.Action("PhieuNhapPO", "PurchaseOrder")?id=' + rs.data }, 2000);
+                            }
+                            else {
+                                showtoast(rs.text, 'error');
+                            }
+
+                        });
+                    }
+                });
+                $("#btnXuatFileMau").click(function () {
+                    XuatFileMau();
+                });
+            });
+        </script>
+    }
+    @if (User.IsInRole("0") || User.IsInRole("1=4"))
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $("#btnXoa").click(function () {
+                    var thongbao = confirm("Bạn có muốn xóa đơn đặt hàng đang chọn. OK để tiếp tục.");
+                    if (!thongbao)
+                        return;
+                    var data = {}
+                    data.IDPO = "@IDPO";
+                    data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+                     $.post('@Url.Action("DelPO", "PurchaseOrder")', data).done(function (rs) {
+                            if (rs.code > 0) {
+                                showtoast(rs.text, 'success');
+                                setTimeout(function () { window.location.href = '@Url.Action("PhieuNhapPO", "PurchaseOrder")?id=' + rs.data }, 2000);
+                            }
+                            else {
+                                showtoast(rs.text, 'error');
+                            }
+
+                        });
+                });
+            });
+        </script>
+
+    }
+}

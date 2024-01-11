@@ -1,0 +1,672 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{6F2D5EBC-05E6-4088-BA7B-99DC0845E46D}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WMS</RootNamespace>
+    <AssemblyName>WMS</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <Use64BitIISExpress />
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ClosedXML, Version=0.95.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ClosedXML.0.95.3\lib\net40\ClosedXML.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Charts.v20.1.Core, Version=20.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.CodeParser.v20.1, Version=20.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Data.v20.1, Version=20.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.DataAccess.v20.1, Version=20.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Docs.v20.1, Version=20.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Office.v20.1.Core, Version=20.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Pdf.v20.1.Core, Version=20.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.PivotGrid.v20.1.Core, Version=20.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Printing.v20.1.Core, Version=20.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.RichEdit.v20.1.Core, Version=20.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.RichEdit.v20.1.Export, Version=20.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Sparkline.v20.1.Core, Version=20.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Spreadsheet.v20.1.Core, Version=20.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Utils.v20.1.UI, Version=20.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Web.ASPxSpreadsheet.v20.1, Version=20.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Web.ASPxThemes.v20.1, Version=20.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Web.Mvc5.v20.1, Version=20.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Web.Resources.v20.1, Version=20.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Web.v20.1, Version=20.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Xpo.v20.1, Version=20.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.XtraCharts.v20.1, Version=20.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.XtraGauges.v20.1.Core, Version=20.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.XtraReports.v20.1, Version=20.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.XtraReports.v20.1.Web, Version=20.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraReports.v20.1.Web.WebForms, Version=20.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DocumentFormat.OpenXml, Version=2.7.2.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocumentFormat.OpenXml.2.7.2\lib\net40\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
+    <Reference Include="ExcelNumberFormat, Version=1.0.10.0, Culture=neutral, PublicKeyToken=23c6f5d73be07eca, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelNumberFormat.1.0.10\lib\net20\ExcelNumberFormat.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Libs">
+      <HintPath>..\packages\System.Web.Libs.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.7\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.7\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http">
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest">
+    </Reference>
+    <Reference Include="System.Web.Optimization">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="WebGrease">
+      <Private>True</Private>
+      <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
+    </Reference>
+    <Reference Include="Antlr3.Runtime">
+      <Private>True</Private>
+      <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Net.Http.Formatting">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.4\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.4\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.4\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.2\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Owin">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.2.2.2\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.2\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Owin">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin">
+      <HintPath>..\packages\Microsoft.Owin.4.0.0\lib\net451\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.4.0.0\lib\net451\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security">
+      <HintPath>..\packages\Microsoft.Owin.Security.4.0.0\lib\net451\Microsoft.Owin.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Cookies">
+      <HintPath>..\packages\Microsoft.Owin.Security.Facebook.4.0.0\lib\net451\Microsoft.Owin.Security.Facebook.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Cookies">
+      <HintPath>..\packages\Microsoft.Owin.Security.Cookies.4.0.0\lib\net451\Microsoft.Owin.Security.Cookies.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Google">
+      <HintPath>..\packages\Microsoft.Owin.Security.Google.4.0.0\lib\net451\Microsoft.Owin.Security.Google.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Twitter">
+      <HintPath>..\packages\Microsoft.Owin.Security.Twitter.4.0.0\lib\net451\Microsoft.Owin.Security.Twitter.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.MicrosoftAccount">
+      <HintPath>..\packages\Microsoft.Owin.Security.MicrosoftAccount.4.0.0\lib\net451\Microsoft.Owin.Security.MicrosoftAccount.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.OAuth">
+      <HintPath>..\packages\Microsoft.Owin.Security.OAuth.4.0.0\lib\net451\Microsoft.Owin.Security.OAuth.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_GlobalResources\Main.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Main.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\Menu.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Menu.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\CorsSupport.cs" />
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\IdentityConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\ApiChuyenContThanhPhamController.cs" />
+    <Compile Include="Controllers\ApiChuyenKeController.cs" />
+    <Compile Include="Controllers\ApiChuyenKeThanhPhamController.cs" />
+    <Compile Include="Controllers\ApiDataController.cs" />
+    <Compile Include="Controllers\ApiNhanHangController.cs" />
+    <Compile Include="Controllers\ApiNhapKhoThanhPhamController.cs" />
+    <Compile Include="Controllers\ApiPhieuNhapHangController.cs" />
+    <Compile Include="Controllers\ApiSanXuatController.cs" />
+    <Compile Include="Controllers\ApiXuatContainerController.cs" />
+    <Compile Include="Controllers\ApiXuatHangTrangController.cs" />
+    <Compile Include="Controllers\apiXuatThanhPhamKhacController.cs" />
+    <Compile Include="Controllers\BaoCaoController.cs" />
+    <Compile Include="Controllers\ChuyenKeController.cs" />
+    <Compile Include="Controllers\DataController.cs" />
+    <Compile Include="Controllers\DemoController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
+    <Compile Include="Controllers\HangTrangController.cs" />
+    <Compile Include="Controllers\HeThongController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\LenhRaiHangController.cs" />
+    <Compile Include="Controllers\PhieuNhapHangController.cs" />
+    <Compile Include="Controllers\PurchaseOrderController.cs" />
+    <Compile Include="Controllers\ReportController.cs" />
+    <Compile Include="Controllers\SQLBuilderController.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\CustomRoleProvider.cs" />
+    <Compile Include="Models\GridData.cs" />
+    <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\JsonStatus.cs" />
+    <Compile Include="Models\ListPO.cs" />
+    <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\PhanQuyenModel.cs" />
+    <Compile Include="Models\PhieuNhapHang.cs" />
+    <Compile Include="Models\PO.cs" />
+    <Compile Include="Models\ReportsModel.cs" />
+    <Compile Include="Models\TrangThaiNguoiDung.cs" />
+    <Compile Include="Models\Users.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Providers\ApplicationOAuthProvider.cs" />
+    <Compile Include="Startup.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="bin\Antlr3.Runtime.dll" />
+    <Content Include="bin\ClosedXML.dll" />
+    <Content Include="bin\DevExpress.Charts.v20.1.Core.dll" />
+    <Content Include="bin\DevExpress.CodeParser.v20.1.dll" />
+    <Content Include="bin\DevExpress.Data.v20.1.dll" />
+    <Content Include="bin\DevExpress.DataAccess.v20.1.dll" />
+    <Content Include="bin\DevExpress.Docs.v20.1.dll" />
+    <Content Include="bin\DevExpress.Office.v20.1.Core.dll" />
+    <Content Include="bin\DevExpress.Pdf.v20.1.Core.dll" />
+    <Content Include="bin\DevExpress.PivotGrid.v20.1.Core.dll" />
+    <Content Include="bin\DevExpress.Printing.v20.1.Core.dll" />
+    <Content Include="bin\DevExpress.RichEdit.v20.1.Core.dll" />
+    <Content Include="bin\DevExpress.RichEdit.v20.1.Export.dll" />
+    <Content Include="bin\DevExpress.Sparkline.v20.1.Core.dll" />
+    <Content Include="bin\DevExpress.Spreadsheet.v20.1.Core.dll" />
+    <Content Include="bin\DevExpress.Utils.v20.1.UI.dll" />
+    <Content Include="bin\DevExpress.Web.ASPxSpreadsheet.v20.1.dll" />
+    <Content Include="bin\DevExpress.Web.ASPxThemes.v20.1.dll" />
+    <Content Include="bin\DevExpress.Web.Mvc5.v20.1.dll" />
+    <Content Include="bin\DevExpress.Web.Resources.v20.1.dll" />
+    <Content Include="bin\DevExpress.Web.v20.1.dll" />
+    <Content Include="bin\DevExpress.Xpo.v20.1.dll" />
+    <Content Include="bin\DevExpress.XtraCharts.v20.1.dll" />
+    <Content Include="bin\DevExpress.XtraGauges.v20.1.Core.dll" />
+    <Content Include="bin\DevExpress.XtraReports.v20.1.dll" />
+    <Content Include="bin\DevExpress.XtraReports.v20.1.Web.dll" />
+    <Content Include="bin\DevExpress.XtraReports.v20.1.Web.WebForms.dll" />
+    <Content Include="bin\DocumentFormat.OpenXml.dll" />
+    <Content Include="bin\EntityFramework.dll" />
+    <Content Include="bin\EntityFramework.SqlServer.dll" />
+    <Content Include="bin\ExcelNumberFormat.dll" />
+    <Content Include="bin\Helpers.dll" />
+    <Content Include="bin\Helpers.pdb" />
+    <Content Include="bin\Microsoft.AspNet.Identity.Core.dll" />
+    <Content Include="bin\Microsoft.AspNet.Identity.EntityFramework.dll" />
+    <Content Include="bin\Microsoft.AspNet.Identity.Owin.dll" />
+    <Content Include="bin\Microsoft.Owin.dll" />
+    <Content Include="bin\Microsoft.Owin.Host.SystemWeb.dll" />
+    <Content Include="bin\Microsoft.Owin.Security.Cookies.dll" />
+    <Content Include="bin\Microsoft.Owin.Security.dll" />
+    <Content Include="bin\Microsoft.Owin.Security.Google.dll" />
+    <Content Include="bin\Microsoft.Owin.Security.MicrosoftAccount.dll" />
+    <Content Include="bin\Microsoft.Owin.Security.OAuth.dll" />
+    <Content Include="bin\Microsoft.Owin.Security.Twitter.dll" />
+    <Content Include="bin\Microsoft.Web.Infrastructure.dll" />
+    <Content Include="bin\Newtonsoft.Json.dll" />
+    <Content Include="bin\Owin.dll" />
+    <Content Include="bin\System.Net.Http.Formatting.dll" />
+    <Content Include="bin\System.Web.Helpers.dll" />
+    <Content Include="bin\System.Web.Http.dll" />
+    <Content Include="bin\System.Web.Http.WebHost.dll" />
+    <Content Include="bin\System.Web.Libs.dll" />
+    <Content Include="bin\System.Web.Mvc.dll" />
+    <Content Include="bin\System.Web.Optimization.dll" />
+    <Content Include="bin\System.Web.Razor.dll" />
+    <Content Include="bin\System.Web.WebPages.Deployment.dll" />
+    <Content Include="bin\System.Web.WebPages.dll" />
+    <Content Include="bin\System.Web.WebPages.Razor.dll" />
+    <Content Include="bin\WebGrease.dll" />
+    <Content Include="bin\WMS.DB.dll" />
+    <Content Include="bin\WMS.DB.pdb" />
+    <Content Include="bin\WMS.dll" />
+    <Content Include="bin\WMS.pdb" />
+    <Content Include="Content\css\bootstrap.css" />
+    <Content Include="Content\css\bootstrap.min.css" />
+    <Content Include="Content\css\dx-diagram.css" />
+    <Content Include="Content\css\dx-diagram.min.css" />
+    <Content Include="Content\css\dx-gantt.css" />
+    <Content Include="Content\css\dx-gantt.min.css" />
+    <Content Include="Content\css\dx.carmine.compact.css" />
+    <Content Include="Content\css\dx.carmine.css" />
+    <Content Include="Content\css\dx.common.css" />
+    <Content Include="Content\css\dx.contrast.compact.css" />
+    <Content Include="Content\css\dx.contrast.css" />
+    <Content Include="Content\css\dx.dark.compact.css" />
+    <Content Include="Content\css\dx.dark.css" />
+    <Content Include="Content\css\dx.darkmoon.compact.css" />
+    <Content Include="Content\css\dx.darkmoon.css" />
+    <Content Include="Content\css\dx.darkviolet.compact.css" />
+    <Content Include="Content\css\dx.darkviolet.css" />
+    <Content Include="Content\css\dx.greenmist.compact.css" />
+    <Content Include="Content\css\dx.greenmist.css" />
+    <Content Include="Content\css\dx.ios7.default.css" />
+    <Content Include="Content\css\dx.light.compact.css" />
+    <Content Include="Content\css\dx.light.css" />
+    <Content Include="Content\css\dx.material.blue.dark.compact.css" />
+    <Content Include="Content\css\dx.material.blue.dark.css" />
+    <Content Include="Content\css\dx.material.blue.light.compact.css" />
+    <Content Include="Content\css\dx.material.blue.light.css" />
+    <Content Include="Content\css\dx.material.lime.dark.compact.css" />
+    <Content Include="Content\css\dx.material.lime.dark.css" />
+    <Content Include="Content\css\dx.material.lime.light.compact.css" />
+    <Content Include="Content\css\dx.material.lime.light.css" />
+    <Content Include="Content\css\dx.material.orange.dark.compact.css" />
+    <Content Include="Content\css\dx.material.orange.dark.css" />
+    <Content Include="Content\css\dx.material.orange.light.compact.css" />
+    <Content Include="Content\css\dx.material.orange.light.css" />
+    <Content Include="Content\css\dx.material.purple.dark.compact.css" />
+    <Content Include="Content\css\dx.material.purple.dark.css" />
+    <Content Include="Content\css\dx.material.purple.light.compact.css" />
+    <Content Include="Content\css\dx.material.purple.light.css" />
+    <Content Include="Content\css\dx.material.teal.dark.compact.css" />
+    <Content Include="Content\css\dx.material.teal.dark.css" />
+    <Content Include="Content\css\dx.material.teal.light.compact.css" />
+    <Content Include="Content\css\dx.material.teal.light.css" />
+    <Content Include="Content\css\dx.softblue.compact.css" />
+    <Content Include="Content\css\dx.softblue.css" />
+    <Content Include="Content\css\wms.css" />
+    <Content Include="Content\css\theme.css" />
+    <Content Include="Content\fonts\Nioiconc731.svg" />
+    <Content Include="Content\js\apps\chatsee8b.js" />
+    <Content Include="Content\js\apps\file-manageree8b.js" />
+    <Content Include="Content\js\apps\inboxee8b.js" />
+    <Content Include="Content\js\apps\messagesee8b.js" />
+    <Content Include="Content\js\bundle.js" />
+    <Content Include="Content\js\charts\gd-analyticsee8b.js" />
+    <Content Include="Content\js\charts\gd-defaultee8b.js" />
+    <Content Include="Content\js\charts\gd-investee8b.js" />
+    <Content Include="Content\js\libs\jqvmapee8b.js" />
+    <Content Include="Content\js\lib\lucario.css" />
+    <Content Include="Content\js\lib\matchbrackets.js" />
+    <Content Include="Content\js\lib\sql.js" />
+    <Content Include="Content\js\libs\tagifyee8b.js" />
+    <Content Include="Content\js\scripts.js" />
+    <Content Include="Content\upload\images\favicon.png" />
+    <Content Include="Content\upload\images\logo.png" />
+    <Content Include="Content\upload\images\slide_lg1.png" />
+    <Content Include="Content\js\lib\codemirror.css" />
+    <Content Include="Content\js\lib\codemirror.js" />
+    <Content Include="favicon.ico" />
+    <Content Include="Global.asax" />
+    <Content Include="Content\fonts\Nioiconc731.eot" />
+    <Content Include="Content\fonts\Nioiconc731.ttf" />
+    <Content Include="Content\fonts\Nioiconc731.woff" />
+    <Content Include="Content\fonts\Nunito-Bold.eot" />
+    <Content Include="Content\fonts\Nunito-Bold.ttf" />
+    <Content Include="Content\fonts\Nunito-Bold.woff" />
+    <Content Include="Content\fonts\Nunito-Bold.woff2" />
+    <Content Include="Content\fonts\Nunito-Boldd41d.eot" />
+    <Content Include="Content\fonts\Nunito-Regular.eot" />
+    <Content Include="Content\fonts\Nunito-Regular.ttf" />
+    <Content Include="Content\fonts\Nunito-Regular.woff" />
+    <Content Include="Content\fonts\Nunito-Regular.woff2" />
+    <Content Include="Content\fonts\Nunito-Regulard41d.eot" />
+    <Content Include="Content\fonts\Roboto-Bold.eot" />
+    <Content Include="Content\fonts\Roboto-Bold.ttf" />
+    <Content Include="Content\fonts\Roboto-Bold.woff" />
+    <Content Include="Content\fonts\Roboto-Bold.woff2" />
+    <Content Include="Content\fonts\Roboto-Boldd41d.eot" />
+    <Content Include="Content\fonts\Roboto-Light.eot" />
+    <Content Include="Content\fonts\Roboto-Light.ttf" />
+    <Content Include="Content\fonts\Roboto-Light.woff" />
+    <Content Include="Content\fonts\Roboto-Light.woff2" />
+    <Content Include="Content\fonts\Roboto-Lightd41d.eot" />
+    <Content Include="Content\fonts\Roboto-Medium.eot" />
+    <Content Include="Content\fonts\Roboto-Medium.ttf" />
+    <Content Include="Content\fonts\Roboto-Medium.woff" />
+    <Content Include="Content\fonts\Roboto-Medium.woff2" />
+    <Content Include="Content\fonts\Roboto-Mediumd41d.eot" />
+    <Content Include="Content\fonts\Roboto-Regular.eot" />
+    <Content Include="Content\fonts\Roboto-Regular.ttf" />
+    <Content Include="Content\fonts\Roboto-Regular.woff" />
+    <Content Include="Content\fonts\Roboto-Regular.woff2" />
+    <Content Include="Content\fonts\Roboto-Regulard41d.eot" />
+    <Content Include="Content\css\fonts\Roboto-300.ttf" />
+    <Content Include="Content\css\fonts\Roboto-300.woff" />
+    <Content Include="Content\css\fonts\Roboto-300.woff2" />
+    <Content Include="Content\css\fonts\Roboto-400.ttf" />
+    <Content Include="Content\css\fonts\Roboto-400.woff" />
+    <Content Include="Content\css\fonts\Roboto-400.woff2" />
+    <Content Include="Content\css\fonts\Roboto-500.ttf" />
+    <Content Include="Content\css\fonts\Roboto-500.woff" />
+    <Content Include="Content\css\fonts\Roboto-500.woff2" />
+    <Content Include="Content\css\fonts\Roboto-700.ttf" />
+    <Content Include="Content\css\fonts\Roboto-700.woff" />
+    <Content Include="Content\css\fonts\Roboto-700.woff2" />
+    <Content Include="Content\css\icons\dxicons.ttf" />
+    <Content Include="Content\css\icons\dxicons.woff" />
+    <Content Include="Content\css\icons\dxicons.woff2" />
+    <Content Include="Content\css\icons\dxiconsios.ttf" />
+    <Content Include="Content\css\icons\dxiconsios.woff" />
+    <Content Include="Content\css\icons\dxiconsios.woff2" />
+    <Content Include="Content\css\icons\dxiconsmaterial.ttf" />
+    <Content Include="Content\css\icons\dxiconsmaterial.woff" />
+    <Content Include="Content\css\icons\dxiconsmaterial.woff2" />
+    <Content Include="Content\upload\FileMau\FileExportPO.xlsx" />
+    <Content Include="Content\upload\FileMau\MauInPortPoChiTiet.xlsx" />
+    <Content Include="Content\upload\FileMau\MauLenhRaiHang.xlsx" />
+    <Content Include="Content\upload\template\BaoCaoNhapHangTrang.xlsx" />
+    <Content Include="Content\upload\template\BaoCaoTheoDoiKeHangTrang.xlsx" />
+    <Content Include="Content\upload\template\BaoCaoTheoDoiKeThanhPham.xlsx" />
+    <Content Include="Content\upload\template\FileMauCLS.xlsx" />
+    <Content Include="Content\upload\template\FileMauXuatKeHangTrang.xlsx" />
+    <Content Include="Content\upload\template\FileMauBaoCaoTienDoSanXuat.xlsx" />
+    <Content Include="Content\upload\template\FileMauBaoCaoTienDoSanXuatChiTiet.xlsx" />
+    <Content Include="Content\upload\template\FileMauCIRS.xlsx" />
+    <Content Include="Content\upload\reports\InQRCode1.repx" />
+    <Content Include="Content\upload\reports\INQRCode2.repx" />
+    <Content Include="Content\fonts\DMSans-Bold.eot" />
+    <Content Include="Content\fonts\DMSans-Bold.ttf" />
+    <Content Include="Content\fonts\DMSans-Bold.woff" />
+    <Content Include="Content\fonts\DMSans-Bold.woff2" />
+    <Content Include="Content\fonts\DMSans-Boldd41d.eot" />
+    <Content Include="Content\fonts\DMSans-Medium.eot" />
+    <Content Include="Content\fonts\DMSans-Medium.ttf" />
+    <Content Include="Content\fonts\DMSans-Medium.woff" />
+    <Content Include="Content\fonts\DMSans-Medium.woff2" />
+    <Content Include="Content\fonts\DMSans-Mediumd41d.eot" />
+    <Content Include="Content\fonts\DMSans-Regular.eot" />
+    <Content Include="Content\fonts\DMSans-Regular.ttf" />
+    <Content Include="Content\fonts\DMSans-Regular.woff" />
+    <Content Include="Content\fonts\DMSans-Regular.woff2" />
+    <Content Include="Content\fonts\DMSans-Regulard41d.eot" />
+    <Content Include="Content\fonts\summernote.eot" />
+    <Content Include="Content\fonts\summernote.ttf" />
+    <Content Include="Content\fonts\summernote.woff" />
+    <Content Include="Content\fonts\summernote.woff2" />
+    <Content Include="Content\fonts\summernoted41d.eot" />
+    <Content Include="bin\WMS.DB.dll.config" />
+    <Content Include="bin\WMS.dll.config" />
+    <Content Include="Content\upload\template\BaoCaoNhapThanhPham.xlsx" />
+    <Content Include="Content\upload\template\BaoCaoXuatThanhPham.xlsx" />
+    <Content Include="Content\upload\template\FielMauBaoCaoTienDoSanXuat.xlsx" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
+    <None Include="Scripts\jquery-3.3.1.intellisense.js" />
+    <Content Include="Scripts\angular.js" />
+    <Content Include="Scripts\angular.min.js" />
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\cldr.js" />
+    <Content Include="Scripts\cldr.min.js" />
+    <Content Include="Scripts\dx-diagram.js" />
+    <Content Include="Scripts\dx-diagram.min.js" />
+    <Content Include="Scripts\dx-gantt.js" />
+    <Content Include="Scripts\dx-gantt.min.js" />
+    <Content Include="Scripts\dx.all.debug.js" />
+    <Content Include="Scripts\dx.all.js" />
+    <Content Include="Scripts\dx.viz-web.debug.js" />
+    <Content Include="Scripts\dx.viz-web.js" />
+    <Content Include="Scripts\dx.viz.debug.js" />
+    <Content Include="Scripts\dx.viz.js" />
+    <Content Include="Scripts\dx.web.debug.js" />
+    <Content Include="Scripts\dx.web.js" />
+    <Content Include="Scripts\globalize.js" />
+    <Content Include="Scripts\globalize.min.js" />
+    <Content Include="Scripts\jquery-3.3.1.js" />
+    <Content Include="Scripts\jquery-3.3.1.min.js" />
+    <Content Include="Scripts\jquery-3.3.1.slim.js" />
+    <Content Include="Scripts\jquery-3.3.1.slim.min.js" />
+    <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.js" />
+    <Content Include="Scripts\jquery.min.js" />
+    <Content Include="Scripts\jquery.validate.js" />
+    <Content Include="Scripts\jquery.validate.min.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\jszip.js" />
+    <Content Include="Scripts\jszip.min.js" />
+    <Content Include="Scripts\knockout-latest.debug.js" />
+    <Content Include="Scripts\knockout-latest.js" />
+    <Content Include="Scripts\login.js" />
+    <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\parsley.min.js" />
+    <Content Include="Scripts\wms.js" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Views\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Home\About.cshtml" />
+    <Content Include="Views\Home\Contact.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Account\Login.cshtml" />
+    <Content Include="Views\Error\Unauthorized.cshtml" />
+    <Content Include="Views\PurchaseOrder\Index.cshtml" />
+    <Content Include="Views\PhieuNhapHang\Index.cshtml" />
+    <Content Include="Views\PhieuNhapHang\PhieuNhap.cshtml" />
+    <Content Include="Views\SQLBuilder\Index.cshtml" />
+    <Content Include="Views\PurchaseOrder\PhieuNhapPO.cshtml" />
+    <Content Include="Views\LenhRaiHang\Index.cshtml" />
+    <Content Include="Views\BaoCao\BaoCaoTheoDoiNhapHangTrang.cshtml" />
+    <Content Include="Views\Report\Index.cshtml" />
+    <Content Include="Views\PurchaseOrder\InQRCode1.cshtml" />
+    <Content Include="Views\PurchaseOrder\ShowInQRCode1.cshtml" />
+    <Content Include="Views\ChuyenKe\Index.cshtml" />
+    <Content Include="Views\LenhRaiHang\InMauQRCode2.cshtml" />
+    <Content Include="Views\LenhRaiHang\ShowInQRCode2.cshtml" />
+    <Content Include="Views\Demo\Index.cshtml" />
+    <Content Include="Views\BaoCao\_SpreadsheetPartial.cshtml" />
+    <Content Include="Views\BaoCao\Index.cshtml" />
+    <Content Include="Views\BaoCao\BaoCaoTienDoTrongSanXuat.cshtml" />
+    <Content Include="Views\BaoCao\BaoCaoXuatKeHangTrang.cshtml" />
+    <Content Include="Views\HeThong\QuanLyNguoiDung.cshtml" />
+    <Content Include="Views\HeThong\NguoiDung.cshtml" />
+    <Content Include="Views\HeThong\DMKe.cshtml" />
+    <Content Include="Views\Report\InQRCodeKe.cshtml" />
+    <Content Include="Views\HeThong\DMNhaCungCap.cshtml" />
+    <Content Include="Views\ChuyenKe\LichSuChuyenKe.cshtml" />
+    <Content Include="Views\BaoCao\XuatFileCLS.cshtml" />
+    <Content Include="Views\BaoCao\BaoCaoTheoDoiKeThanhPham.cshtml" />
+    <Content Include="Views\HeThong\QuanLyNhomNguoiDung.cshtml" />
+    <Content Include="Views\HeThong\NhomNguoiDung.cshtml" />
+    <Content Include="Views\BaoCao\BaoCaoTheoDoiKeHangTrang.cshtml" />
+    <Content Include="Views\PhieuNhapHang\XuatFileCIRS.cshtml" />
+    <Content Include="Views\BaoCao\BaoCaoTienDoTrongSanXuatChiTiet.cshtml" />
+    <Content Include="Views\BaoCao\BaoCaoTheoDoiNhapKeThanhPham.cshtml" />
+    <Content Include="Views\BaoCao\BaoCaoTheoDoiXuatKeThanhPham.cshtml" />
+    <Content Include="Views\HeThong\PhanQuyenNguoiDung.cshtml" />
+    <Content Include="Views\ChuyenKe\LichSuChuyenKeThanhPham.cshtml" />
+    <Content Include="Views\LenhRaiHang\InMauQRCode2TuChon.cshtml" />
+    <Content Include="Views\LenhRaiHang\ShowInQRCode2TuChon.cshtml" />
+    <Content Include="Views\PurchaseOrder\InQRCode1TuChon.cshtml" />
+    <Content Include="Views\PurchaseOrder\ShowInQRCode1TuChon.cshtml" />
+    <Content Include="Views\LenhRaiHang\LichSuQuetSanXuat.cshtml" />
+    <Content Include="Views\BaoCao\BaoCaoTongTonTheoSKU.cshtml" />
+    <Content Include="Views\HangTrang\Index.cshtml" />
+    <Content Include="Views\BaoCao\BaoCaoChiTietHangThanhPhamTrongKho.cshtml" />
+    <Content Include="Views\BaoCao\BaoCaoChiTietKhoHangTrang.cshtml" />
+    <Content Include="Views\ChuyenKe\ChuyenKeThanhPham.cshtml" />
+    <Content Include="Views\BaoCao\BaoCaoTrangThaiSanXuatQRCode.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+    <Folder Include="bin\de\" />
+    <Folder Include="bin\es\" />
+    <Folder Include="bin\ja\" />
+    <Folder Include="bin\ru\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <Content Include="Scripts\jquery-3.3.1.slim.min.map" />
+    <Content Include="Scripts\jquery-3.3.1.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Helpers\WMS.Helpers.csproj">
+      <Project>{f3f81647-5a6d-4419-bc2d-1366a061de51}</Project>
+      <Name>WMS.Helpers</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WMS.DB\WMS.DB.csproj">
+      <Project>{348f2da0-8b9c-4d88-9ac5-e31d0e2194c1}</Project>
+      <Name>WMS.DB</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\Main.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>Main.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\Menu.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>Menu.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>56896</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:56896/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>

@@ -1,0 +1,117 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Header{
+    <div class="nk-block-head-content">
+        <h3 class="nk-block-title page-title">Xuất file C.I.R.S</h3>
+        <div class="nk-block-des text-soft">
+        </div>
+    </div>
+}
+<div class="nk-block">
+    <div class="card card-bordered card-stretch">
+        <div class="card-inner-group">
+            <div class="card-inner position-relative ">
+                <div class="row justify-content-center">
+                    <div class="col-lg-2 col-sm-2">
+                        <div class="form-group">
+                            <label class="overline-title overline-title-alt form-label">Số Phiếu</label>
+                            <div id="txt-sophieu">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-2 text-right">
+                        <label class="overline-title overline-title-alt form-label text-white">@Resources.Main.XuatFile</label>
+                        <div class="form-group "><button type="button" class="btn btn-secondary" onclick="loadReport()">@Resources.Main.TimKiem</button></div>
+                    </div>
+                    <div class="col-md-2 col-2 text-right">
+                        <li>
+                            <a href="#" class="btn btn-white btn-dim btn-outline-primary" id="XuatFileExcel" onclick="ExportXLS()"><em class="icon ni ni-download-cloud"></em><span>@Resources.Main.XuatFile</span></a>
+                        </li>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card-inner p-0">
+                <div style="padding-top:0;margin-top:0" id="iNoiDung">
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="loadpanel"></div>
+@section CustomScripts{
+    <script type="text/javascript">
+        var loadPanel = $(".loadpanel").dxLoadPanel({
+            shadingColor: "rgba(0,0,0,0.4)",
+            visible: false,
+            showIndicator: true,
+            showPane: true,
+            shading: true,
+            message: 'Loading..',
+            closeOnOutsideClick: false,
+        }).dxLoadPanel("instance");
+        var SoPhieu = null;
+        $(function () {
+            $('#danh-sach').height($(window).height() - 250);
+            $("#txt-sophieu").dxTextBox({
+                placeholder: "Nhập số phiếu",
+                dataType: 'number',
+            });
+
+            //loadReport();
+        })
+        function loadReport() {
+            try {
+
+                loadPanel.show();
+                SoPhieu = $("#txt-sophieu").dxTextBox("instance").option('value');
+                var FileName = Globalize.format(new Date(), 'yyyy-MM-dd-HH-mm-ss');
+
+                var data = {};
+                data.SoPhieu = SoPhieu;
+                data.FileName = FileName;
+            $.ajax({
+                url: '@Url.Action("getXuatPhieuNhap", "PhieuNhapHang")',
+                type: "POST",
+                data: data,
+                success: function (rs) {
+                    $('#iNoiDung').empty();
+                    if (rs.code == 1) {
+                        var ifr = $('<iframe />', {
+                            id: 'main-content',
+                            scrolling: 'no',
+                            frameborder: 0,
+                            src: '@Url.Action("Index", "BaoCao")',
+                            style: 'width:100%;padding-top:5px;background-color:#fff;transition:all 0.25s;-webkit-transition:all 0.25s;height:650px;',
+
+                        });
+                        $('#iNoiDung').append(ifr);
+                        document.getElementById("main-content").onload = function () { loadPanel.hide(); };
+                    } else {
+                        loadPanel.hide();
+                        DevExpress.ui.notify("Có lỗi không xuất báo cáo được!" + rs.text, "warning", 2000);
+                    }
+                },
+                error: function (data) {
+                    loadPanel.hide();
+                    showtoast(data,"error");
+                }
+            });
+            } catch (e) {
+                loadPanel.hide();
+                showtoast(e, "error");
+            }
+
+        }
+        function ExportXLS() {
+            var iframe = document.getElementById("main-content");
+            iframe.contentWindow.Download();
+        }
+    </script>
+}

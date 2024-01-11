@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.1169
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WMS.Web", "WMS\WMS.Web.csproj", "{6F2D5EBC-05E6-4088-BA7B-99DC0845E46D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WMS.Helpers", "Helpers\WMS.Helpers.csproj", "{F3F81647-5A6D-4419-BC2D-1366A061DE51}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WMS.DB", "WMS.DB\WMS.DB.csproj", "{348F2DA0-8B9C-4D88-9AC5-E31D0E2194C1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6F2D5EBC-05E6-4088-BA7B-99DC0845E46D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F2D5EBC-05E6-4088-BA7B-99DC0845E46D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F2D5EBC-05E6-4088-BA7B-99DC0845E46D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F2D5EBC-05E6-4088-BA7B-99DC0845E46D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3F81647-5A6D-4419-BC2D-1366A061DE51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3F81647-5A6D-4419-BC2D-1366A061DE51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3F81647-5A6D-4419-BC2D-1366A061DE51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3F81647-5A6D-4419-BC2D-1366A061DE51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{348F2DA0-8B9C-4D88-9AC5-E31D0E2194C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{348F2DA0-8B9C-4D88-9AC5-E31D0E2194C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{348F2DA0-8B9C-4D88-9AC5-E31D0E2194C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{348F2DA0-8B9C-4D88-9AC5-E31D0E2194C1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {516B15C9-4F59-45D6-A056-DC02D6E8A272}
+	EndGlobalSection
+EndGlobal

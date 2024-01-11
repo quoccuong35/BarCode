@@ -1,0 +1,302 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .dx-header-row {
+        background-color: #005180;
+        color: #ffff;
+    }
+</style>
+@section Header{
+    <div class="nk-block-head-content">
+        <h3 class="nk-block-title page-title">@Resources.Menu.ChuyenKe Hàng Trắng</h3>
+    </div>
+    <div class="nk-block-head-content">
+        <div class="toggle-wrap nk-block-tools-toggle">
+            <a href="#" class="btn btn-icon btn-trigger toggle-expand mr-n1" data-target="pageMenu"><em class="icon ni ni-more-v"></em></a>
+            <div class="toggle-expand-content" data-content="pageMenu">
+                <ul class="nk-block-tools g-3">
+                    @if (User.IsInRole("0") || User.IsInRole("4=2"))
+                    {
+                        <li class="nk-block-tools-opt"><a href="#" id="CapNhat" class="btn btn-primary"><em class="icon ni ni-save"></em><span>@Resources.Main.CapNhat</span></a></li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+}
+<div class="nk-block">
+    <div class="card card-bordered card-stretch">
+        <div class="card-inner-group">
+            <div class="card-inner position-relative ">
+                <div class="row justify-content">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label class="overline-title overline-title-alt form-label">Kệ hàng</label>
+                            <div id="select-kehang">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-3">
+                        <div class="form-group">
+                            <label class="overline-title overline-title-alt form-label">Mã Quản Lý Kho</label>
+                            <div id="txt-maquanlykho">
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 col-2 text-right">
+                        <label class="overline-title overline-title-alt form-label text-white">Filter</label>
+                        <div class="form-group "><button type="button" class="btn btn-secondary" onclick="LocDanhSach()">@Resources.Main.TimKiem</button></div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card-inner p-0">
+                <div id="gridContainer"></div>
+            </div>
+        </div>
+    </div>
+</div>
+@section CustomScripts{
+    <script type="text/javascript">
+        var kehang = "";
+        var maquanlykho = null;
+
+        $(function () {
+            $('#gridContainer').height($(window).height() - 250);
+            $("#txt-maquanlykho").dxTextBox({
+                placeholder: "Nhập mã quản lý kho"
+            });
+             $.get('@Url.Action("GetKeHang", "Data")', function (rs) {
+                // $("#select-nhacungcap").dxSelectBox("instance").option('value', 0);
+                 listKe = rs;
+                 $("#select-kehang").dxDropDownBox({
+
+                     dataSource: new DevExpress.data.ArrayStore({ key: "IdKe", data: listKe }),
+                     valueExpr: "IdKe",
+                     deferRendering: false,
+                     placeholder: "Chọn kệ hàng...",
+                     displayExpr: function (item) {
+                         //return " [" + item.MaKe + "] " + item.TenKe;
+                         return item.TenKe;
+                     },
+                     showClearButton: true,
+                     onOpened: function (e) {
+                         var drw = 550;
+                         var popupInstance = e.element.find(".dx-popup").dxPopup("instance"); popupInstance.option('width', drw); popupInstance.off("optionChanged", optionChangedHandler); popupInstance.on("optionChanged", optionChangedHandler); function optionChangedHandler(args) { if (args.name == "width" && args.value < drw) { args.component.option("width", drw); } } e.component.getDataSource().reload();
+                     },
+                     contentTemplate: function (e) {
+                         var value = e.component.option("value"),
+                             $dataGrid = $('<div class="wms-grid">').dxDataGrid({
+                                 id:"Comboboxtest",
+                                 dataSource: e.component.getDataSource(),
+                                 filterRow: {
+                                     visible: true,
+                                     applyFilter: "auto"
+                                 },
+                                 selection: { mode: "multiple" },
+
+                                 columns: [{ dataField: 'MaKe', caption: 'Kệ' }],
+                                 hoverStateEnabled: true, pager: { showPageSizeSelector: true, showInfo: true }, rowAlternationEnabled: true, showBorders: true, allowColumnReordering: true, allowColumnResizing: true, columnAutoWidth: true, selectedRowKeys: [value], height: "100%",
+                                 onSelectionChanged: function (selectedItems) {
+                                     var keys = selectedItems.selectedRowKeys;
+                                     e.component.option("value", keys);
+                                 }
+                             });
+
+                         dataGrid = $dataGrid.dxDataGrid("instance");
+                         e.component.on("valueChanged", function (args) {
+                             dataGrid.selectRows(args.value, false);
+                         });
+                         return $dataGrid;
+                     }
+                 });
+            });
+            LocDanhSach();
+        });
+        function LocDanhSach() {
+            kehang = $("#select-kehang").dxDropDownBox("instance").option('value');
+            var temp = "";
+            if (kehang.length > 0) {
+                for (var i = 0; i < kehang.length; i++) {
+                    temp =  temp + kehang[i] + ",";
+                }
+            }
+            if (temp.length > 0) {
+                temp = temp.substring(0, temp.length - 1);
+            }
+            maquanlykho = $("#txt-maquanlykho").dxTextBox("instance").option('value');
+            $.get("@Url.Action("getHangTrangTheoKe", "ChuyenKe")", { MaKe: temp, MaChiTiet:maquanlykho})
+                    .done(function (result) {
+                        LoaddxDataGrid(result);
+                    })
+                    .fail(function (jqxhr, textStatus, error) {
+                        deferred.reject("Data Loading Error");
+                    });
+
+        }
+        function CapNhat()
+        {
+
+        }
+        function LoaddxDataGrid(dataSource) {
+            $("#gridContainer").dxDataGrid({
+                dataSource: dataSource,
+                editing: {
+                    allowUpdating: true,
+                    mode: 'batch' // 'batch' | 'cell' | 'form' | 'popup'
+                },
+                export: {
+                    enabled: true,
+                },
+                selection: {
+                    mode: "multiple"
+                }, remoteOperations: {
+                    paging: true,
+                    filtering: true
+                },
+                filterRow: {
+                    visible: true,
+                    applyFilter: "auto"
+                },
+                paging: {
+                    pageSize: 10
+                },
+
+                showRowLines: true,
+                rowAlternationEnabled: true,
+                showBorders: true,
+                hoverStateEnabled: true,
+                allowColumnReordering: true,
+                allowColumnResizing: true,
+                columnAutoWidth: true,
+                onRowUpdating: function (e) {
+                    for (var property in e.oldData) {
+                        if (!e.newData.hasOwnProperty(property)) {
+                            e.newData[property] = e.oldData[property];
+                        }
+                    }
+                    updatedObject = e.newData;
+                },
+                pager: {
+                    showPageSizeSelector: true,
+                    allowedPageSizes: [10, 15, 20, 50, 100],
+                    showInfo: true
+                },
+                columnFixing: {
+                    enabled: false
+                },
+                columns: [
+                    { dataField: 'IdKe', caption: 'Mã NCC', width: 120, allowEditing: false, visible: false },
+                    { dataField: 'MaChiTietSanPham', caption: 'Mã SKU', width: 120, allowEditing: false },
+                    { dataField: 'TenChiTietSanPham', caption: 'Tên quản lý kho', width: 220, allowEditing: false},
+                    { dataField: 'MaKe', caption: 'Kệ', width: 100, allowEditing: false },
+                    { dataField: 'SoLuong', caption: 'Số lượng', width: 100, allowEditing: false },
+                    {
+                        dataField: 'MaKeChuyen',
+                        caption: 'Kệ chuyển đến',
+                        width: 120,
+                        lookup: {
+                            dataSource: {
+                                store: {
+                                    type: "array",
+                                    data: listKe,
+                                    key: "IdKe"
+                                },
+                                pageSize: 20,
+                                paginate: true
+                            },
+                            displayExpr: "MaKe",
+                            valueExpr: "IdKe"
+                        },
+                        validationRules: [{ type: "required", message: "Chọ kệ" }, {
+                            type: "custom",
+                            message: "Kệ chuyển đến không được trùng kệ hiện tại",
+                            validationCallback: function (options) {
+                                var rowOptions = options.validator.element().parent().data('options');
+                                var rowData = rowOptions.data;
+                                var value = options.value;
+                                var result = true;
+                                if (value == rowData.IdKe) {
+                                    result = false;
+                                }
+
+                                //set result based on rowData
+                                return result;
+                            }
+                        }]
+                    },
+                    {
+                        dataField: 'SoLuongChuyen', caption: 'Số lượng chuyển', width: 120, dataType: "number",
+                        validationRules: [{ type: "required", message: "Nhập số lượng" },
+                            {
+                                type: "custom",
+                                message: "Số lượng chuyển không hợp lệ",
+                                validationCallback: function (options) {
+                                    var rowOptions = options.validator.element().parent().data('options');
+                                    var rowData = rowOptions.data;
+                                    var value = options.value;
+                                    var result = true;
+                                    if (value == null || value <= 0 || value > rowData.SoLuong  ) {
+                                        result = false;
+                                    }
+                                    //set result based on rowData
+                                    return result;
+                                }
+                            }]
+                    },
+                ],
+            });
+        }
+    </script>
+    @if (User.IsInRole("0") || User.IsInRole("4=3"))
+    {
+        <script type="text/javascript">
+        $(document).ready(function () {
+            $("#CapNhat").click(function () {
+                var items = $('#gridContainer').dxDataGrid('instance');
+                items.saveEditData().done(function (e) {
+                })
+                var selectedRowsData = items.getSelectedRowsData();
+
+                if (selectedRowsData.length > 0) {
+                    let Loi = "";
+                    for (var i = 0; i < selectedRowsData.length; i++) {
+
+                        if (selectedRowsData[i].SoLuongChuyen === null || selectedRowsData[i].SoLuongChuyen == "" || selectedRowsData[i].MaKeChuyen === null || selectedRowsData[i].MaKeChuyen == "") {
+                            Loi += "Chưa nhập thông tin ở mã <b>" + selectedRowsData[i].MaChiTietSanPham + "</b> <br>";
+                        }
+                    }
+                    if (Loi.length > 0) {
+                        showtoast(Loi, 'error');
+                        return;
+                    }
+                    var data = {};
+                    data.list = selectedRowsData
+                    data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+                   $.post("@Url.Action("CapNhatChuyenKe", "ChuyenKe")", data)
+                       .done(function (rs) {
+                           if (rs.code == 0) {
+                               showtoast(rs.text, 'error');
+                           }
+                           else {
+                               showtoast(rs.text, 'success');
+                           }
+                           LocDanhSach();
+
+                    })
+                    .fail(function (jqxhr, textStatus, error) {
+                        deferred.reject("Data Loading Error");
+                    });
+                }
+            });
+        });
+        </script>
+    }
+
+}

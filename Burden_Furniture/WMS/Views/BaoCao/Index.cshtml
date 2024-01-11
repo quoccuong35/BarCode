@@ -1,0 +1,37 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ReportView</title>
+    @Html.DevExpress().GetStyleSheets(
+        new StyleSheet { ExtensionSuite = ExtensionSuite.NavigationAndLayout },
+        new StyleSheet { ExtensionSuite = ExtensionSuite.Editors },
+        new StyleSheet { ExtensionSuite = ExtensionSuite.Spreadsheet }
+    )
+
+    <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+    @Html.DevExpress().GetScripts(
+        new Script { ExtensionSuite = ExtensionSuite.NavigationAndLayout },
+        new Script { ExtensionSuite = ExtensionSuite.Editors },
+        new Script { ExtensionSuite = ExtensionSuite.Spreadsheet }
+    )
+</head>
+<body>
+
+    @using (Html.BeginForm("DownloadXls", "BaoCao"))
+    {
+        @Html.Action("SpreadsheetPartial")
+    }
+    <script type="text/javascript">
+        function Download() {
+            $("form").submit();
+        }
+    </script>
+</body>
+</html>

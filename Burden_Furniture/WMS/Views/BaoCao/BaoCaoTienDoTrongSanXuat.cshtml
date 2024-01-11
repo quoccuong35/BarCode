@@ -1,0 +1,220 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Header{
+    <div class="nk-block-head-content">
+        <h3 class="nk-block-title page-title">@Resources.Menu.BaoCaoTienDoSanXuat</h3>
+    </div>
+    <div class="nk-block-head-content">
+        <div class="toggle-wrap nk-block-tools-toggle">
+            <a href="#" class="btn btn-icon btn-trigger toggle-expand mr-n1" data-target="pageMenu"><em class="icon ni ni-more-v"></em></a>
+            <div class="toggle-expand-content" data-content="pageMenu">
+                <ul class="nk-block-tools g-3">
+                    @if (User.IsInRole("0") || User.IsInRole("7=6"))
+                    {
+                        <li>
+                            <a href="#" class="btn btn-white btn-dim btn-outline-primary" onclick="ExportXLS()"><em class="icon ni ni-download-cloud"></em><span>@Resources.Main.XuatFile</span></a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+
+}
+<div class="nk-block">
+    <div class="card card-bordered card-stretch">
+        <div class="card-inner-group">
+            <div class="card-inner position-relative ">
+                <div class="row justify-content-center">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label class="overline-title overline-title-alt form-label">Số EPI</label>
+                            <div id="select-soepi">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-sm-3">
+                        <div class="form-group">
+                            <label class="overline-title overline-title-alt form-label">@Resources.Main.TuNgay</label>
+                            <div id="date-tungay">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-sm-3">
+                        <div class="form-group">
+                            <label class="overline-title overline-title-alt form-label">@Resources.Main.DenNgay</label>
+                            <div id="date-denngay">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-2 text-right">
+                        <label class="overline-title overline-title-alt form-label text-white">@Resources.Main.XuatFile</label>
+                        <div class="form-group "><button type="button" class="btn btn-secondary" onclick="loadReport()">@Resources.Main.TimKiem</button></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-inner p-0">
+                <div style="padding-top:0;margin-top:0" id="iNoiDung">
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="loadpanel"></div>
+@section CustomScripts{
+
+    <script type="text/javascript">
+        var date = new Date();
+        var tungay = Globalize.format(new Date(date.getFullYear(), date.getMonth(), 1), "yyyy-MM-dd"), soEPI = null,
+            denngay = Globalize.format(new Date(date.getFullYear(), date.getMonth(), date.getDate()), "yyyy-MM-dd");
+        var FileName = Globalize.format(new Date(), 'yyyy-MM-dd-HH-mm-ss');
+
+       var loadPanel = $(".loadpanel").dxLoadPanel({
+           shadingColor: "rgba(0,0,0,0.4)",
+           visible: false,
+           showIndicator: true,
+           showPane: true,
+           shading: true,
+           message: 'Loading..',
+           closeOnOutsideClick: false,
+       }).dxLoadPanel("instance");
+        $(document).ready(function () {
+            try {
+                loadPanel.show();
+                $("#date-tungay").dxDateBox({
+                value: new Date(date.getFullYear(), date.getMonth(), 1),
+                width: '100%',
+                displayFormat: 'dd/MM/yyyy',
+                onValueChanged: function (data) {
+                    tungay = Globalize.format(data.value, "yyyy-MM-dd");
+                },
+                }).dxDateBox("instance");
+                $("#date-denngay").dxDateBox({
+                    value: date,
+                    width: '100%',
+                    displayFormat: 'dd/MM/yyyy',
+                    onValueChanged: function (data) {
+                        denngay = Globalize.format(data.value, "yyyy-MM-dd");
+                    },
+                }).dxDateBox("instance");
+                $.get('@Url.Action("GetEPI", "Data")', function (rs) {
+                     $("#select-soepi").dxDropDownBox({
+                         dataSource: new DevExpress.data.ArrayStore({ key: "SoEPI", data: rs }),
+                         valueExpr: "SoEPI",
+                         deferRendering: false,
+                         placeholder: "Chọn số EPI...",
+                         displayExpr: function (item) {
+                             //return " [" + item.MaKe + "] " + item.TenKe;
+                             return item.Ten;
+                         },
+                         showClearButton: true,
+                         onOpened: function (e) {
+                             var drw = 550;
+                             var popupInstance = e.element.find(".dx-popup").dxPopup("instance"); popupInstance.option('width', drw); popupInstance.off("optionChanged", optionChangedHandler); popupInstance.on("optionChanged", optionChangedHandler); function optionChangedHandler(args) { if (args.name == "width" && args.value < drw) { args.component.option("width", drw); } } e.component.getDataSource().reload();
+                         },
+                         contentTemplate: function (e) {
+                             var value = e.component.option("value"),
+                                 $dataGrid = $('<div class="wms-grid">').dxDataGrid({
+                                     id:"Comboboxtest",
+                                     dataSource: e.component.getDataSource(),
+                                     filterRow: {
+                                         visible: true,
+                                         applyFilter: "auto"
+                                     },
+                                     selection: { mode: "multiple" },
+
+                                     columns: [{ dataField: 'SoEPI', caption: 'Số EPI' }],
+                                     hoverStateEnabled: true, pager: { showPageSizeSelector: true, showInfo: true }, rowAlternationEnabled: true, showBorders: true, allowColumnReordering: true, allowColumnResizing: true, columnAutoWidth: true, selectedRowKeys: [value], height: "100%",
+                                     onSelectionChanged: function (selectedItems) {
+                                         var keys = selectedItems.selectedRowKeys;
+                                         e.component.option("value", keys);
+                                     }
+                                 });
+
+                             dataGrid = $dataGrid.dxDataGrid("instance");
+                             e.component.on("valueChanged", function (args) {
+                                 dataGrid.selectRows(args.value, false);
+                             });
+                             return $dataGrid;
+                         }
+                    });
+                });
+                $.ajax({
+                       url: '@Url.Action("getBaoCaoTienDonTrongSanXuat", "BaoCao")',
+                       data: { FileName: FileName, TuNgay: tungay, DenNgay: denngay, SoEPI: soEPI },
+                       success: function (rs) {
+                           $('#iNoiDung').empty();
+                           if (rs.code == 1) {
+                               var ifr = $('<iframe />', {
+                                   id: 'main-content',
+                                   scrolling: 'no',
+                                   frameborder: 0,
+                                   src: '@Url.Action("Index", "BaoCao")',
+                                   style: 'width:100%;padding-top:5px;background-color:#fff;transition:all 0.25s;-webkit-transition:all 0.25s;height:650px;',
+
+                               });
+                               $('#iNoiDung').append(ifr);
+                               document.getElementById("main-content").onload = function () { loadPanel.hide(); };
+                           } else {
+                               loadPanel.hide();
+                               DevExpress.ui.notify("Có lỗi không xuất báo cáo được!", "warning", 2000);
+                           }
+                       }
+                   });
+                loadPanel.hide();
+            } catch (e) {
+                loadPanel.hide();
+            }
+        });
+       function loadReport() {
+           loadPanel.show();
+           var FileName = Globalize.format(new Date(), 'yyyy-MM-dd-HH-mm-ss');
+            tungay = Globalize.format($("#date-tungay").dxDateBox("instance").option('value'), 'yyyy-MM-dd');
+           denngay = Globalize.format($("#date-denngay").dxDateBox("instance").option('value'), 'yyyy-MM-dd');
+           soEPI = $("#select-soepi").dxDropDownBox("instance").option('value');
+           var temp = "";
+           if (soEPI.length > 0) {
+               for (var i = 0; i < soEPI.length; i++) {
+                   temp = temp + soEPI[i] + ",";
+               }
+           }
+           if (temp.length > 0) {
+               temp = temp.substring(0, temp.length - 1);
+           }
+           $.ajax({
+               url: '@Url.Action("getBaoCaoTienDonTrongSanXuat", "BaoCao")',
+               data: { FileName: FileName, TuNgay: tungay, DenNgay: denngay, SoEPI: temp },
+               success: function (rs) {
+                   $('#iNoiDung').empty();
+                   if (rs.code == 1) {
+                       var ifr = $('<iframe />', {
+                           id: 'main-content',
+                           scrolling: 'no',
+                           frameborder: 0,
+                           src: '@Url.Action("Index", "BaoCao")',
+                           style: 'width:100%;padding-top:5px;background-color:#fff;transition:all 0.25s;-webkit-transition:all 0.25s;height:650px;',
+
+                       });
+                       $('#iNoiDung').append(ifr);
+                       document.getElementById("main-content").onload = function () { loadPanel.hide(); };
+                   } else {
+                       loadPanel.hide();
+                       DevExpress.ui.notify("Có lỗi không xuất báo cáo được!", "warning", 2000);
+                   }
+               }
+           });
+       }
+       function ExportXLS() {
+           var iframe = document.getElementById("main-content");
+           iframe.contentWindow.Download();
+       }
+    </script>
+}

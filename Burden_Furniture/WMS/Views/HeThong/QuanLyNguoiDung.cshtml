@@ -1,0 +1,162 @@
+﻿@{
+
+    ViewBag.Title = Resources.Menu.PhieuNhapHang;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .dx-header-row {
+        background-color: #005180;
+        color: #ffff;
+    }
+</style>
+@section Header{
+    <div class="nk-block-head-content">
+        <h3 class="nk-block-title page-title"> @Resources.Menu.QuanLyNguoiDung</h3>
+        <div class="nk-block-des text-soft">
+
+        </div>
+    </div>
+    <div class="nk-block-head-content">
+        <div class="toggle-wrap nk-block-tools-toggle">
+            <a href="#" class="btn btn-icon btn-trigger toggle-expand mr-n1" data-target="pageMenu"><em class="icon ni ni-more-v"></em></a>
+            <div class="toggle-expand-content" data-content="pageMenu">
+                <ul class="nk-block-tools g-3">
+                    @if (User.IsInRole("0"))
+                    {
+                        <li class="nk-block-tools-opt"><div id="btnXoa" class="btn btn-danger" onclick="XoaNGuoiDung()"><em class="icon dx-link dx-link-delete dx-icon-trash dx-link-icon"></em><span>@Resources.Main.Xoa</span></div></li>
+                    }
+                    @if (User.IsInRole("0"))
+                    {
+                        <li class="nk-block-tools-opt"><a href="@Url.Action("NguoiDung","HeThong")" class="btn btn-primary"><em class="icon ni ni-plus"></em><span>@Resources.Main.ThemMoi</span></a></li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+
+}
+<div class="nk-block">
+    <div class="card card-bordered card-stretch">
+        <div class="card-inner-group">
+            <div class="card-inner position-relative ">
+                <div class="row justify-content-center">
+                    <div class="col-md-2 col-2 text-right">
+                        <label class="overline-title overline-title-alt form-label text-white">Tìm Kiếm</label>
+                        <div class="form-group "><button type="button" class="btn btn-secondary" onclick="Refresh()">@Resources.Main.TimKiem</button></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-inner p-0">
+                <div id="danh-sach" class="wms-grid"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section CustomScripts{
+
+    <script type="text/javascript">
+
+        $(function () {
+            $('#danh-sach').height($(window).height() - 250);
+            loadData();
+        });
+        function loadData() {
+
+            $.get("@Url.Action("getNguoiDung","HeThong")").done(function (rs) {
+                $("#danh-sach").dxDataGrid({
+                    dataSource: rs.data,
+                    remoteOperations: {
+                        paging: true,
+                        filtering: true
+                    },
+                    selection: {
+                        mode: "multiple"
+                    },
+                    filterRow: {
+                        visible: true,
+                        applyFilter: "auto"
+                    },
+                    paging: {
+                        pageSize: 10
+                    },
+                    showRowLines: true,
+                    rowAlternationEnabled: true,
+                    showBorders: true,
+                    hoverStateEnabled: true,
+                    allowColumnReordering: true,
+                    allowColumnResizing: true,
+                    columnAutoWidth: true,
+                    keyExpr: "IdNguoiDung",
+                    pager: {
+                        showPageSizeSelector: true,
+                        allowedPageSizes: [10, 15, 20, 50, 100],
+                        showInfo: true
+                    },
+                    columnFixing: {
+                        enabled: false
+                    },
+                    columns: [{
+                        dataField: "TaiKhoan",
+                        caption: "Tài khoản",
+                        width: 100,
+                        allowEditing: false
+                    },
+                    {
+                        dataField: "HoTen",
+                        caption: "Họ tên",
+                        width: 150,
+                        allowEditing: false
+                    },
+                    {
+                        dataField: "HoatDong",
+                        caption: "Hoạt động",
+                        width: 100,
+                        allowEditing: false
+                    },
+                    {
+                        dataField: "TenNhom",
+                        caption: "Nhóm người dùng",
+                        width: 150,
+                    }
+                    ],
+                    onRowDblClick: function (e) {
+                        self.location = "/HeThong/NguoiDung?id=" + e.key;
+                    },
+                    
+                });
+            })
+
+        }
+        function Refresh() {
+            $("#danh-sach").dxDataGrid("instance").clearFilter();
+            $("#danh-sach").dxDataGrid("instance").refresh();
+        }
+        
+        function XoaNGuoiDung() {
+          
+            var dataSource = $('#danh-sach').dxDataGrid('instance');
+            var selectedRowsData = dataSource.getSelectedRowKeys();
+            if (selectedRowsData.length > 0) {
+                var del = confirm("Bạn có muốn xóa người dùng đã chọn. Xóa là không khôi phục lại được. OK để tiếp tục")
+                if (!del)
+                    return;
+                var data = {};
+                data.id = selectedRowsData
+                data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+                $.post("@Url.Action("XoaNguoiDung","HeThong")", data).done(function (rs) {
+                    if (rs.code == 1) {
+                        showtoast(rs.text, "success")
+                        loadData();
+                    }
+                    else {
+                        if (rs.code == 1) {
+                            showtoast(rs.text, "error")
+                            loadData();
+                        }
+                    }
+                })
+            }
+        }
+    </script>
+}

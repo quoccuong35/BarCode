@@ -1,0 +1,271 @@
+﻿
+@{
+ 
+    ViewBag.Title = Resources.Menu.PhieuNhapHang;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .dx-header-row {
+        background-color: #005180;
+        color: #ffff;
+    }
+</style>
+
+@section Header{
+    <div class="nk-block-head-content">
+        <h3 class="nk-block-title page-title">Danh Sách @Resources.Menu.PhieuNhapHang</h3>
+        <div class="nk-block-des text-soft">
+            
+        </div>
+    </div>
+    <div class="nk-block-head-content">
+        <div class="toggle-wrap nk-block-tools-toggle">
+            <a href="#" class="btn btn-icon btn-trigger toggle-expand mr-n1" data-target="pageMenu"><em class="icon ni ni-more-v"></em></a>
+            <div class="toggle-expand-content" data-content="pageMenu">
+                <ul class="nk-block-tools g-3">
+                    @if (User.IsInRole("0") || User.IsInRole("2=2"))
+                    {
+                        <li class="nk-block-tools-opt"><a href="@Url.Action("PhieuNhap","PhieuNhapHang")" class="btn btn-primary"><em class="icon ni ni-plus"></em><span>@Resources.Main.ThemMoi</span></a></li>
+                    }
+                    @*@if (User.IsInRole("0") || User.IsInRole("2=1"))
+                    {
+                        <li>
+                            <a href="#" class="btn btn-white btn-dim btn-outline-primary"><em class="icon ni ni-download-cloud"></em><span>@Resources.Main.XuatFile</span></a>
+                        </li>
+                    }*@
+                </ul>
+            </div>
+        </div>
+    </div>
+
+}
+
+
+<div class="nk-block">
+    <div class="card card-bordered card-stretch">
+        <div class="card-inner-group" >
+            <div class="card-inner position-relative ">
+                <div class="row justify-content-end">
+
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label class="overline-title overline-title-alt form-label">@Resources.Main.NhaCungCap</label>
+                            <div id="select-nhacungcap">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-sm-2">
+                        <div class="form-group">
+                            <label class="overline-title overline-title-alt form-label">Số Phiếu</label>
+                            <div id="txt-sophieu">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-sm-3">
+                        <div class="form-group">
+                            <label class="overline-title overline-title-alt form-label">@Resources.Main.TuNgay</label>
+                            <div id="date-tungay">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-sm-3">
+                        <div class="form-group">
+                            <label class="overline-title overline-title-alt form-label">@Resources.Main.DenNgay</label>
+                            <div id="date-denngay">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-2 text-right">
+                        <label class="overline-title overline-title-alt form-label text-white">Tìm Kiếm</label>
+                        <div class="form-group "><button type="button" class="btn btn-secondary" onclick="Refresh()">@Resources.Main.TimKiem</button></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-inner p-0">
+                <div id="danh-sach" class="wms-grid"></div>
+            </div>
+     
+        </div>
+    </div>
+</div>
+
+
+
+
+@section CustomScripts{
+
+    <script type="text/javascript">
+        var date = new Date();
+        var tungay = Globalize.format(new Date(date.getFullYear(), date.getMonth(), 1), "yyyy-MM-dd"),
+            denngay = Globalize.format(new Date(date.getFullYear(), date.getMonth(), date.getDate()), "yyyy-MM-dd"), isLoadingAll = false, ncc = null;
+        var nguoidung = 1;
+        var sophieu = null;
+        var dataSource = new DevExpress.data.CustomStore({
+            load: function (loadOptions) {
+                var deferred = $.Deferred(), params = {}, filter = [];
+
+                if (loadOptions.filter) {
+                    var fil = JSON.stringify(loadOptions.filter);
+                    if (fil.indexOf('],"and",[') > 0) {
+                        $.each(loadOptions.filter, function (i, v) {
+                            if (i % 2 == 0) {
+                                filter.push({ Column: v[0], Compare: v[1], Value: v[2] });
+                            }
+                        });
+                    }
+                    else {
+                        filter.push({ Column: loadOptions.filter[0], Compare: loadOptions.filter[1], Value: loadOptions.filter[2] });
+                    }
+                    
+                }
+                filter.push({ Column: 'CONVERT(DATE,PNH.NgayGiaoHang)', Compare: '>=', Value: tungay });
+                filter.push({ Column: 'CONVERT(DATE,PNH.NgayGiaoHang)', Compare: '<=', Value: denngay });
+                if (ncc != null) {
+                    filter.push({ Column: 'PNH.IdNhaCungCap', Compare: '=', Value: ncc });
+                }
+                if (sophieu != null && sophieu.trim()!="") {
+                    filter.push({ Column: 'PNH.SoPhieu', Compare: '=', Value: sophieu });
+                }
+                params.Filter = JSON.stringify(filter);
+                params.isLoadingAll = isLoadingAll;
+                params.PageSize = loadOptions.take;
+                params.Page = loadOptions.skip / params.PageSize + 1;
+                if (params.Page == null || params.Page == undefined || isNaN(params.Page)) {
+                    return;
+                }
+                $.getJSON("@Url.Action("GetDanhSach", "PhieuNhapHang")", params)
+                    .done(function (result) {
+                        isLoadingAll = false;
+                        var dt = JSON.parse(result.data);
+                        deferred.resolve(dt, { totalCount: dt != null && dt.length > 0 ? dt[0].Total : 0 });
+
+                    })
+                    .fail(function (jqxhr, textStatus, error) {
+                        deferred.reject("Data Loading Error");
+                    });
+                return deferred.promise();
+            }
+        });
+        $(function () {
+            $('#danh-sach').height($(window).height() - 250);
+            $("#date-tungay").dxDateBox({
+                value: new Date(date.getFullYear(), date.getMonth(), 1),
+                width: '100%',
+                displayFormat: 'dd/MM/yyyy',
+                onValueChanged: function (data) {
+                    tungay = Globalize.format(data.value, "yyyy-MM-dd");
+                },
+            }).dxDateBox("instance");
+            $("#date-denngay").dxDateBox({
+                value: date,
+                width: '100%',
+                displayFormat: 'dd/MM/yyyy',
+                onValueChanged: function (data) {
+                    denngay = Globalize.format(data.value, "yyyy-MM-dd");
+                },
+            }).dxDateBox("instance");
+            $("#danh-sach").dxDataGrid({
+                dataSource: dataSource,
+                selection: {
+                    mode: "multiple"
+                }, remoteOperations: {
+                    paging: true,
+                    filtering: true
+                },
+                filterRow: {
+                    visible: true,
+                    applyFilter: "auto"
+                },
+                paging: {
+                    pageSize: 10
+                },
+                showRowLines: true,
+                rowAlternationEnabled: true,
+                showBorders: true,
+                hoverStateEnabled: true,
+                allowColumnReordering: true,
+                allowColumnResizing: true,
+                columnAutoWidth: true,
+                keyExpr: "IdPhieuNhapHang",
+                pager: {
+                    showPageSizeSelector: true,
+                    allowedPageSizes: [10, 15, 20, 50, 100],
+                    showInfo: true,
+                    visible: true  
+                },
+                columnFixing: {
+                    enabled: false
+                },
+                columns: [{ dataField: 'SoPhieu', caption: 'Số phiếu' },
+                {
+                    dataField: 'TenTrangThai', caption: 'Trạng thái', cellTemplate: function (container, options) {
+                        var data = options.data;
+                        var html = '';
+                        if (data.TrangThai == 1)
+                            html = '<span> <em class="icon ni ni-edit-alt text-primary"></em> <i> ' + data.TenTrangThai + '</i></span>';
+                        else
+                            html = '<span> <em class=""></em> <i> ' + data.TenTrangThai + '</i></span>';
+                        container.html(html);
+                    }
+                },
+                { dataField: 'TenNhaCungCap', caption: 'Nhà cung cấp' },
+                { dataField: 'NgayGiaoHang', caption: 'Ngày giao hàng', dataType: 'datetime', format: "dd/MM/yyyy HH:mm" },
+                    "INTL", "VN", { dataField: 'Go', caption: 'Gỗ' }, { dataField: 'PhuKien', caption: 'Phụ kiện' }],
+                onRowDblClick: function (e) {
+                    self.location = "/PhieuNhapHang/PhieuNhap?id=" + e.key.IdPhieuNhapHang;
+                },
+            });
+            $("#txt-sophieu").dxTextBox({
+                placeholder: "Nhập số phiếu"
+            });
+        });
+
+        $.get('@Url.Action("GetNhaCungCap","Data")', function (rs) {
+            $("#select-nhacungcap").dxDropDownBox({
+                dataSource: new DevExpress.data.ArrayStore({ key: "IdNhaCungCap", data: rs }),
+                valueExpr: "IdNhaCungCap",
+                deferRendering: false,
+                placeholder: "Chọn nhà cung cấp...",
+                displayExpr: function (item) {
+                    return " [" + item.MaNhaCungCap + "] " + item.TenNhaCungCap;
+                },
+                showClearButton: true,
+                onOpened: function (e) {
+                    var drw = 550;
+                    var popupInstance = e.element.find(".dx-popup").dxPopup("instance"); popupInstance.option('width', drw); popupInstance.off("optionChanged", optionChangedHandler); popupInstance.on("optionChanged", optionChangedHandler); function optionChangedHandler(args) { if (args.name == "width" && args.value < drw) { args.component.option("width", drw); } } e.component.getDataSource().reload();
+                },
+                contentTemplate: function (e) {
+                    var value = e.component.option("value"),
+
+                        $dataGrid = $("<div>").dxDataGrid({
+                            filterRow: {
+                                visible: true,
+                                applyFilter: "auto"
+                            },
+                            dataSource: e.component.getDataSource(),
+                            columns: [{ dataField: 'MaNhaCungCap', caption: 'Mã NCC' }, { dataField: 'TenNhaCungCap', caption: 'Nhà cung cấp' }],
+                            hoverStateEnabled: true, pager: { showPageSizeSelector: true, showInfo: true }, rowAlternationEnabled: true, showBorders: true, hoverStateEnabled: false, allowColumnReordering: true, allowColumnResizing: true, columnAutoWidth: true, selection: { mode: "single" }, selectedRowKeys: [value], height: "100%",
+                            onSelectionChanged: function (selectedItems) {
+                                var keys = selectedItems.selectedRowKeys, hasSelection = keys.length; e.component.option("value", hasSelection ? keys[0] : null); if (hasSelection) { e.component.close(); }
+                            }});
+                    dataGrid = $dataGrid.dxDataGrid("instance");
+                    e.component.on("valueChanged", function (args) {
+                        dataGrid.selectRows(args.value, false);
+                    });
+                    return $dataGrid;
+                }
+            });
+      
+        });
+        function Refresh() {
+            ncc = $("#select-nhacungcap").dxDropDownBox("instance").option('value');
+            sophieu = $("#txt-sophieu").dxTextBox("instance").option('value');
+            $("#danh-sach").dxDataGrid("instance").clearFilter();
+            $("#danh-sach").dxDataGrid("instance").refresh();
+        }
+    </script>
+}

@@ -1,0 +1,129 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Header{
+    <div class="nk-block-head-content">
+        <h3 class="nk-block-title page-title">@Resources.Menu.BaoCaoTienDoSanXuat</h3>
+    </div>
+    <div class="nk-block-head-content">
+        <div class="toggle-wrap nk-block-tools-toggle">
+            <a href="#" class="btn btn-icon btn-trigger toggle-expand mr-n1" data-target="pageMenu"><em class="icon ni ni-more-v"></em></a>
+            <div class="toggle-expand-content" data-content="pageMenu">
+                <ul class="nk-block-tools g-3">
+                    <li>
+                        <a href="#" class="btn btn-white btn-dim btn-outline-primary" onclick="ExportXLS()"><em class="icon ni ni-download-cloud"></em><span>@Resources.Main.XuatFile</span></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+}
+<div class="nk-block">
+    <div class="card card-bordered card-stretch">
+        <div class="card-inner-group">
+            <div class="card-inner position-relative ">
+                <div class="row justify-content-center">
+                    <div class="col-lg-2 col-sm-3">
+                        <div class="form-group">
+                            <label class="overline-title overline-title-alt form-label">@Resources.Main.TuNgay</label>
+                            <div id="date-tungay">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-sm-3">
+                        <div class="form-group">
+                            <label class="overline-title overline-title-alt form-label">@Resources.Main.DenNgay</label>
+                            <div id="date-denngay">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-2 text-right">
+                        <label class="overline-title overline-title-alt form-label text-white">@Resources.Main.XuatFile</label>
+                        <div class="form-group "><button type="button" class="btn btn-secondary" onclick="loadReport()">@Resources.Main.TimKiem</button></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-inner p-0">
+                <div style="padding-top:0;margin-top:0" id="iNoiDung">
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="loadpanel"></div>
+@section CustomScripts{
+    <script type="text/javascript">
+       var loadPanel = $(".loadpanel").dxLoadPanel({
+           shadingColor: "rgba(0,0,0,0.4)",
+           visible: false,
+           showIndicator: true,
+           showPane: true,
+           shading: true,
+           message: 'Loading..',
+           closeOnOutsideClick: false,
+       }).dxLoadPanel("instance");
+        $(document).ready(function () {
+            var date = new Date();
+            var tungay = Globalize.format(new Date(date.getFullYear(), date.getMonth(), 1), "yyyy-MM-dd"),
+                denngay = Globalize.format(new Date(date.getFullYear(), date.getMonth(), date.getDate()), "yyyy-MM-dd");
+            $("#date-tungay").dxDateBox({
+                value: new Date(date.getFullYear(), date.getMonth(), 1),
+                width: '100%',
+                displayFormat: 'dd/MM/yyyy',
+                onValueChanged: function (data) {
+                    tungay = Globalize.format(data.value, "yyyy-MM-dd");
+                },
+            }).dxDateBox("instance");
+            $("#date-denngay").dxDateBox({
+                value: date,
+                width: '100%',
+                displayFormat: 'dd/MM/yyyy',
+                onValueChanged: function (data) {
+                    denngay = Globalize.format(data.value, "yyyy-MM-dd");
+                },
+            }).dxDateBox("instance");
+           loadReport();
+       });
+       function loadReport() {
+           loadPanel.show();
+
+           var FileName = Globalize.format(new Date(), 'yyyy-MM-dd-HH-mm-ss');
+           var TuNgay = Globalize.format($("#date-tungay").dxDateBox("instance").option('value'), 'yyyy-MM-dd');
+           var DenNgay = Globalize.format($("#date-denngay").dxDateBox("instance").option('value'), 'yyyy-MM-dd');
+           $.ajax({
+               url: '@Url.Action("getBaoCaoTienDonTrongSanXuat", "BaoCao")',
+               data: { FileName: FileName, TuNgay: TuNgay, DenNgay: DenNgay },
+               success: function (rs) {
+                   $('#iNoiDung').empty();
+                   if (rs.code == 1) {
+                       var ifr = $('<iframe />', {
+                           id: 'main-content',
+                           scrolling: 'no',
+                           frameborder: 0,
+                           src: '@Url.Action("Index", "BaoCao")',
+                           style: 'width:100%;padding-top:5px;background-color:#fff;transition:all 0.25s;-webkit-transition:all 0.25s;height:650px;',
+
+                       });
+                       $('#iNoiDung').append(ifr);
+                       document.getElementById("main-content").onload = function () { loadPanel.hide(); };
+                   } else {
+                       loadPanel.hide();
+                       DevExpress.ui.notify("Có lỗi không xuất báo cáo được!", "warning", 2000);
+                   }
+               }
+           });
+       }
+       function ExportXLS() {
+           var iframe = document.getElementById("main-content");
+           iframe.contentWindow.Download();
+       }
+    </script>
+}

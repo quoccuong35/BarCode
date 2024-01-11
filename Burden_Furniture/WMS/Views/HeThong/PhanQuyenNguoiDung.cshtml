@@ -1,0 +1,220 @@
+﻿@using WMS.DB;
+@using WMS.Models;
+@model WMS.Models.PhanQuyenModel
+@{
+
+    ViewBag.Title = Resources.Menu.PhieuNhapHang;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .dx-header-row {
+        background-color: #005180;
+        color: #ffff;
+    }
+    input[type=checkbox] {
+        /* Double-sized Checkboxes */
+        transform: scale(1.5);
+    }
+
+</style>
+@section Header{
+    <div class="nk-block-head-content">
+        <h3 class="nk-block-title page-title">Phân quyền người dùng</h3>
+        <div class="nk-block-des text-soft">
+
+        </div>
+    </div>
+    <div class="nk-block-head-content">
+        <div class="toggle-wrap nk-block-tools-toggle">
+            <a href="#" class="btn btn-icon btn-trigger toggle-expand mr-n1" data-target="pageMenu"><em class="icon ni ni-more-v"></em></a>
+            @if (User.IsInRole("0"))
+            {
+                <div class="toggle-expand-content" data-content="pageMenu">
+                    <ul class="nk-block-tools g-3">
+                        @if (User.IsInRole("0") || User.IsInRole("10=2") || User.IsInRole("10=3"))
+                        {
+                            <li class="nk-block-tools-opt"><div id="CapNhatNhomNguoiDung" class="btn btn-primary"><em class="icon ni ni-save"></em><span>@Resources.Main.CapNhat Nhóm Người Dùng</span></div></li>
+                            <li class="nk-block-tools-opt"><div id="CapNhatPhanQuyen" class="btn btn-primary"><em class="icon ni ni-save"></em><span>@Resources.Main.CapNhat Phân Quyền</span></div></li>
+                        }
+                        <li>
+                            <a href="@Url.Action("NhomNguoiDung", "HeThong")" class="btn btn-white btn-icon btn-outline-primary " data-toggle="tooltip" data-placement="top" title="Thêm mới nhóm người dùng"><em class="icon ni ni-plus"></em></a>
+                        </li>
+                    </ul>
+                </div>
+            }
+        </div>
+    </div>
+}
+<div class="nk-block">
+    <div class="card card-bordered card-stretch">
+        <div class="card-inner-group">
+            <div class="card-inner">
+                <ul class="nav nav-tabs mt-n3">
+                    <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#NhomNguoiDung">Nhóm người dùng</a></li>
+                    @foreach (HT_NhomQuyen nhom in Model.HTNhomQuyen)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="#Nhom_@nhom.IdNhomQuyen" data-toggle="tab">
+                                @nhom.TenNhomQuyen
+                            </a>
+                        </li>
+                    }
+
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="NhomNguoiDung">
+                        <div class="form-group">
+                            <input type="hidden" value="@Model.NhomNguoiDung.IdNhom" id="IdNhomNguoiDung">
+                            <label class="form-label" for="default-01">Tên nhóm người dùng</label>
+                            <div class="form-control-wrap">
+                                <input type="text" class="form-control" id="TenNhomNguoiDung" placeholder="Nhập tên nhóm người dùng" value="@Model.NhomNguoiDung.TenNhom" />
+                            </div>
+                        </div>
+                    </div>
+                    @foreach (HT_NhomQuyen nhom in Model.HTNhomQuyen)
+                    {
+                        <div class="tab-pane" id="Nhom_@nhom.IdNhomQuyen">
+                            <table class="table" id="dt_@nhom.IdNhomQuyen">
+                                <tr>
+                                    <th style="width:50%">Tên quyền</th>
+                                    <th scope="col">Xem</th>
+                                    <th scope="col">Thêm</th>
+                                    <th scope="col">Sửa</th>
+                                    <th scope="col">Xóa</th>
+                                    <th scope="col">Duyệt</th>
+                                    <th scope="col">In/Export</th>
+                                </tr>
+                                <tbody>
+                                    @foreach (HTQuyen item in Model.QuyenSuDung)
+                                    {
+                                        if (item.IdNhomQuyen.Value == nhom.IdNhomQuyen)
+                                        {
+                                            <tr id="Quyen_@item.IdQuyen">
+                                                <td>@item.TenQuyen</td>
+                                                <td><input type="checkbox" id="1_@item.IdQuyen" @{ViewContext.Writer.Write(item.Xem == true ? "checked" : ""); }></td>
+                                                <td><input type="checkbox" id="2_@item.IdQuyen" @{ViewContext.Writer.Write(item.ThemMoi == true ? "checked" : "");} onclick="myFunction(this)"></td>
+                                                <td><input type="checkbox" id="3_@item.IdQuyen" @{ViewContext.Writer.Write(item.Sua == true ? "checked" : "");} onclick="myFunction(this)"></td>
+                                                <td><input type="checkbox" id="4_@item.IdQuyen" @{ViewContext.Writer.Write(item.Xoa == true ? "checked" : "");} onclick="myFunction(this)"></td>
+                                                <td><input type="checkbox" id="5_@item.IdQuyen" @{ViewContext.Writer.Write(item.Duyet == true ? "checked" : "");} onclick="myFunction(this)"></td>
+                                                <td><input type="checkbox" id="6_@item.IdQuyen" @{ViewContext.Writer.Write(item.Print == true ? "checked" : "");} onclick="myFunction(this)"></td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section CustomScripts{
+
+    <script type="text/javascript">
+        $(function () {
+            $("#CapNhatNhomNguoiDung").on('click', function () {
+                var TenNhom = $("#TenNhomNguoiDung").val();
+                var IDNhomNguoiDung = $("#IdNhomNguoiDung").val()
+                if (TenNhom === null || TenNhom == "") {
+                    showtoast("Tên nhóm không được để trống","error")
+                }
+                var data = {};
+                data.id = IDNhomNguoiDung;
+                data.TenNhom = TenNhom;
+                data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+                $.post("@Url.Action("AddNhomNguoiDung","HeThong")", data).done(function (rs) {
+                    if (rs.code == 1) {
+                        $("#IdNhomNguoiDung").val(rs.data.IdNhom);
+                        showtoast(rs.text, "success");
+                    }
+                    else {
+                        showtoast(rs.text, "error");
+                    }
+                });
+            });
+            $("#CapNhatPhanQuyen").on('click', function () {
+                var IDNhomNguoiDung = $("#IdNhomNguoiDung").val()
+                if (IDNhomNguoiDung == 0) {
+                    showtoast("Chưa lưu nhóm người dùng không thể phân quyền", "error");
+                    return;
+                }
+                var iddoituong = $("#IdNhomNguoiDung").val();
+                var dt = [], idquyen,quyen = "";
+                var tables = document.getElementsByTagName("table");
+                for (var i = 0; i < tables.length; i++) {
+                    var table = tables[i];
+                    for (var j = 0; j < table.rows.length; j++) {
+                        idquyen = table.rows[j].id;
+                        if (idquyen.length > 0) {
+                            quyen = "";
+                            idquyen = idquyen.replace("Quyen_", "")
+                            if ($("#1_" + idquyen ).is(":checked") === true) {
+                                quyen = quyen + idquyen + "=1|";
+                            }
+                            if ($("#2_" + idquyen).is(":checked") === true) {
+                                quyen = quyen + idquyen + "=2|";
+                            }
+                            if ($("#3_" + idquyen).is(":checked") === true) {
+                                quyen = quyen + idquyen + "=3|";
+                            }
+                            if ($("#4_" + idquyen).is(":checked") === true) {
+                                quyen = quyen + idquyen + "=4|";
+                            }
+                            if ($("#5_" + idquyen).is(":checked") === true) {
+                                quyen = quyen + idquyen + "=5|";
+                            }
+                            if ($("#6_" + idquyen).is(":checked") === true) {
+                                quyen = quyen + idquyen + "=6|";
+                            }
+                            if (quyen.length > 0) {
+                                quyen = quyen.substring(0, quyen.length - 1);
+                                dt.push({ IdDoiTuong: iddoituong, LaNguoiDung: false, IdQuyen: idquyen, Quyen: quyen});
+                            }
+                        }
+                    }
+
+                }
+                if (dt.length > 0) {
+                    var data = {};
+                    data.list = dt;
+                    data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+                    $.post("@Url.Action("LuuPhanQuyenNhomNguoiDung", "HeThong")", data).done(function (rs) {
+                        if (rs.code == 1) {
+                            showtoast(rs.text, "success")
+                        }
+                        else {
+                            showtoast(rs.text, "error")
+                        }
+                    }).fail(function (e) {
+                        alert(e);
+                    });
+                }
+            })
+        });
+        function myFunction(a) {
+            var idquyen = a.id.split("_")[1];
+            var check = false;
+            if ($("#2_" + idquyen).is(":checked") === true) {
+                check = true;
+            }
+            if ($("#3_" + idquyen).is(":checked") === true) {
+                check = true;
+            }
+            if ($("#4_" + idquyen).is(":checked") === true) {
+                check = true;
+            }
+            if ($("#5_" + idquyen).is(":checked") === true) {
+                check = true;
+            }
+            if ($("#6_" + idquyen).is(":checked") === true) {
+                check = true;
+            }
+            if ($("#1_" + idquyen).is(":checked") === false) {
+                $("#1_" + idquyen).prop('checked', check);
+            }
+           
+        }
+    </script>
+}

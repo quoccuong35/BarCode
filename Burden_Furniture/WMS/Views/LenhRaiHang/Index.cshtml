@@ -1,0 +1,453 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    bool bDel = false,bEdit = false;
+    if (User.IsInRole("0") || User.IsInRole("3=4"))
+    {
+        bDel = true;
+    }
+    if (User.IsInRole("0") || User.Identity.Name == "pm.inven")
+    {
+       bEdit = true;
+    }
+}
+<style>
+
+    .dx-header-row {
+        background-color: #005180;
+        color: #ffff;
+    }
+</style>
+
+@section Header{
+    <div class="nk-block-head-content">
+        <h3 class="nk-block-title page-title">Danh Sách Lệnh Rải Hàng</h3>
+        @*<div class="nk-block-des text-soft">
+                <p>Bạn có <span>0</span> Lệnh Rải Hàng.</p>
+            </div>*@
+    </div>
+    <div class="nk-block-head-content">
+        <div class="toggle-wrap nk-block-tools-toggle">
+            <a href="#" class="btn btn-icon btn-trigger toggle-expand mr-n1" data-target="pageMenu"><em class="icon ni ni-more-v"></em></a>
+            <div class="toggle-expand-content" data-content="pageMenu">
+                <ul class="nk-block-tools g-3">
+                    @if (User.IsInRole("0") || User.IsInRole("3=2"))
+                    {
+                        <li class="nk-block-tools-opt"><div id="btnXuatFileMau" class="btn btn-primary"><em class="icon ni ni-file-xls"></em><span>File mẫu</span></div></li>
+                        <li class="nk-block-tools-opt"><a class="btn btn-primary" data-toggle="modal" data-target="#modalForm"><em class="icon ni ni-plus" style="color:#ffff"></em><span style="color:#ffff">@Resources.Main.ImPortExcel</span></a></li>
+
+                    }
+                    @if (User.IsInRole("0"))
+                    {
+                        <li class="nk-block-tools-opt"><div id="btnXoa" class="btn btn-danger" ><em class="icon dx-link dx-link-delete dx-icon-trash dx-link-icon"></em><span>@Resources.Main.Xoa </span></div></li>
+                    }
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="nk-block">
+    <div class="card card-bordered card-stretch">
+        <div class="card-inner-group">
+            <div class="card-inner position-relative ">
+                <div class="row justify-content">
+                    <div class="col-lg-2 col-sm-2">
+                        <div class="form-group">
+                            <label class="overline-title overline-title-alt form-label">Số Cont ERI</label>
+                            <div id="txt-soepi">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-sm-3">
+                        <div class="form-group">
+                            <label class="overline-title overline-title-alt form-label">Mã KH</label>
+                            <div id="txt-makhachhang">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-sm-3">
+                        <div class="form-group">
+                            <label class="overline-title overline-title-alt form-label">@Resources.Main.TuNgay (*)</label>
+                            <div id="date-tungay">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-sm-3">
+                        <div class="form-group">
+                            <label class="overline-title overline-title-alt form-label">@Resources.Main.DenNgay (*)</label>
+                            <div id="date-denngay">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-2 text-right">
+                        <label class="overline-title overline-title-alt form-label text-white">@Resources.Main.TimKiem</label>
+                        <div class="form-group "><button type="button" class="btn btn-secondary" onclick="Refresh()">@Resources.Main.TimKiem</button></div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="card-inner p-0">
+                <div id="gridContainer"></div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" tabindex="-1" id="modalForm" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Import Thông Tin Lệnh Rải Hàng</h5>
+                <a href="#" class="close" data-dismiss="modal" aria-label="Close"><em class="icon ni ni-cross"></em></a>
+            </div>
+            <div class="modal-body">
+                <form action="#" class="form-validate is-alter" novalidate="novalidate">
+                    <div class="form-group">
+                        <label class="form-label" for="full-name">Chọn file excel</label>
+                        <div class="form-control-wrap">
+                            <input type="file" name="UploadedFile" id="UploadedFile" accept=".xlsx" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <a href="#" class="btn btn-lg btn-primary" id="ImportThongTinEPI"><em class="icon ni ni-save"></em><span>Lưu thông tin</span></a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="loadpanel"></div>
+@section CustomScripts{
+
+    <script type="text/javascript">
+        var loadPanel = $(".loadpanel").dxLoadPanel({
+            shadingColor: "rgba(0,0,0,0.4)",
+            visible: false,
+            showIndicator: true,
+            showPane: true,
+            shading: true,
+            message: 'Loading..',
+            closeOnOutsideClick: false,
+        }).dxLoadPanel("instance");
+        var date = new Date();
+        var tungay = Globalize.format(new Date(date.getFullYear(), date.getMonth(), 1), "yyyy-MM-dd"),
+            denngay = Globalize.format(new Date(date.getFullYear(), date.getMonth(), date.getDate()), "yyyy-MM-dd"), isLoadingAll = false;
+        var soepi = null,
+            makhachhang = null;
+        var nguoidung = 1;
+        var dataSource = new DevExpress.data.CustomStore({
+            load: function (loadOptions) {
+                var deferred = $.Deferred(), params = {}, filter = [];
+
+                if (loadOptions.filter) {
+                    var fil = JSON.stringify(loadOptions.filter);
+                    if (fil.indexOf('],"and",[') > 0) {
+                        $.each(loadOptions.filter, function (i, v) {
+                            if (i % 2 == 0) {
+                                filter.push({ Column: v[0], Compare: v[1], Value: v[2] });
+                            }
+                        });
+                    }
+                    else {
+                        filter.push({ Column: loadOptions.filter[0], Compare: loadOptions.filter[1], Value: loadOptions.filter[2] });
+                    }
+
+                }
+                filter.push({ Column: 'CONVERT(DATE,NgayTao)', Compare: '>=', Value: tungay });
+                filter.push({ Column: 'CONVERT(DATE,NgayTao)', Compare: '<=', Value: denngay });
+                if (soepi != null && soepi != "") {
+                    filter.push({ Column: 'SoEPI', Compare: '=', Value: soepi });
+                }
+                if (makhachhang != null && makhachhang != "") {
+                    filter.push({ Column: 'MaKH', Compare: '=', Value: makhachhang });
+                }
+                params.Filter = JSON.stringify(filter);
+                params.isLoadingAll = isLoadingAll;
+                params.PageSize = loadOptions.take;
+                params.Page = loadOptions.skip / params.PageSize + 1;
+                if (params.Page == null || params.Page == undefined || isNaN(params.Page)) {
+                    return;
+                }
+                $.getJSON("@Url.Action("GetDanhSach", "LenhRaiHang")", params)
+                    .done(function (result) {
+                        isLoadingAll = false;
+                        var dt = JSON.parse(result.data);
+                        deferred.resolve(dt, { totalCount: dt!= null && dt.length>0 ? dt[0].Total : 0 });
+                    })
+                    .fail(function (jqxhr, textStatus, error) {
+                        deferred.reject("Data Loading Error");
+                    });
+                return deferred.promise();
+            },
+            remove: function (key) {
+                var d = $.Deferred();
+                 $.post("@Url.Action("Del", "LenhRaiHang")", key).done(function (rs) {
+                    if (rs.code == 0) {
+                        showtoast(rs.text,"error");
+                        d.reject(rs.code);
+                    } else {
+                        showtoast(rs.text,"success");
+                        d.resolve();
+                        Refresh();
+                    }
+                });
+            },
+             update: function (key, values) {
+                 
+                 values.IDLenhRaiHang = key.IDLenhRaiHang;
+                 $.post("@Url.Action("Edit", "LenhRaiHang")", { item:values,old:key}).done(function (rs) {
+                    if (rs.code == 0) {
+                        showtoast(rs.text,"error");
+                        d.reject(rs.code);
+                    } else {
+                        showtoast(rs.text,"success");
+                        d.resolve();
+                        Refresh();
+                    }
+                });
+            }
+
+        });
+        $(function () {
+            $('#gridContainer').height($(window).height() - 250);
+            $("#txt-soepi").dxTextBox({
+                placeholder: "Nhập số EPI."
+            });
+            $("#txt-makhachhang").dxTextBox({
+                placeholder: "Nhập Mã KH"
+            });
+            $("#date-tungay").dxDateBox({
+                value: new Date(date.getFullYear(), date.getMonth(), 1),
+                width: '100%',
+                displayFormat: 'dd/MM/yyyy',
+                onValueChanged: function (data) {
+                    tungay = Globalize.format(data.value, "yyyy-MM-dd");
+                },
+            }).dxDateBox("instance");
+            $("#date-denngay").dxDateBox({
+                value: date,
+                width: '100%',
+                displayFormat: 'dd/MM/yyyy',
+                onValueChanged: function (data) {
+                    denngay = Globalize.format(data.value, "yyyy-MM-dd");
+                },
+            }).dxDateBox("instance");
+            $("#gridContainer").dxDataGrid({
+                dataSource: dataSource,
+                remoteOperations: {
+                    paging: true,
+                    filtering: true
+                },
+                filterRow: {
+                    visible: true,
+                    applyFilter: "auto"
+                },
+                paging: {
+                    pageSize: 10
+                },
+                columnFixing: {
+                    enabled: true
+                },
+                showRowLines: true,
+                rowAlternationEnabled: true,
+                showBorders: true,
+                hoverStateEnabled: true,
+                allowColumnReordering: true,
+                allowColumnResizing: true,
+                columnAutoWidth: true,
+                editing: {
+                    allowDeleting: "@bDel" == "True" ? true : false,
+                    allowUpdating: "@bEdit" == "True" ? true : false,
+                    useIcons: true,
+                    form: {
+                        labelLocation: "top"
+                    },
+                    popup: {
+                        title: "Thông tin sản xuất",
+                        showTitle: true,
+                        width: 700,
+                        height: 525,
+                        position: {
+                            my: "top",
+                            at: "top",
+                            of: window
+                        }
+                    }
+                },
+                pager: {
+                    showPageSizeSelector: true,
+                    allowedPageSizes: [10, 15, 20, 50, 100],
+                    showInfo: true,
+                },
+                keyExpr: "IDLenhRaiHang",
+                columns: [{
+                    dataField: "SoEPI",
+                    caption: "Số Cont EPI",
+                    allowEditing: false
+                },
+                {
+                    dataField: "MaSanPham",
+                    caption: "Mã SP",
+                    editorType: "dxTextArea",
+                    //width: 80,
+                },
+                {
+                    dataField: "MaChiTietSanPham",
+                    caption: "Mã Hàng SKU",
+                   // width: 90,
+                    //fixed: true,
+                },
+                {
+                    dataField: "MaKH",
+                    caption: "Mã KH",
+                   // width: 90,
+                    //fixed: true,
+                },
+                {
+                    dataField: "SoPO",
+                    caption: "Số Po",
+                   // width: 90,
+                    //fixed: true,
+                },
+                {
+                    dataField: "MoTa",
+                    caption: "Mô Tả",
+                   // width: 220,
+                   // fixed: true,
+                },
+                {
+                    dataField: "KichThuocSanPham",
+                    caption: "Kích thước SP",
+                    //width: 150
+                },
+                {
+                    dataField: "MaMauOrVai",
+                    caption: "Màu/Mã Vải Color",
+                  //  width: 120
+                },
+                {
+                    dataField: "ODM",
+                    caption: "ODM",
+                   // width: 100
+                },
+                {
+                    dataField: "TayNam",
+                    caption: "Tay Nắm",
+                    //width: 100
+                },
+                {
+                    dataField: "MaThung",
+                    caption: "Mã Thùng",
+                   // width: 100
+                    },
+                 {
+                     dataField: "LoaiDongGoi",
+                    caption: "Loại Đóng Gói",
+                   // width: 100
+                    },
+                    {
+                        dataField: "MauTrong",
+                        caption: "Mà trong",
+                        //width: 100
+                    },
+                    {
+                        dataField: "SoLuongEPI",
+                        caption: "Số Lượng EPI",
+                        //allowEditing: false
+                        //width: 90
+                    }
+                ],
+            });
+        });
+
+
+        function Refresh() {
+               soepi = $("#txt-soepi").dxTextBox("instance").option('value'),
+                makhachhang = $("#txt-makhachhang").dxTextBox("instance").option('value');
+            $("#gridContainer").dxDataGrid("instance").clearFilter();
+            $("#gridContainer").dxDataGrid("instance").refresh();
+        }
+        function XuatFileMau() {
+            self.location = "/LenhRaiHang/XuatFileMau";
+        }
+    </script>
+    @if (User.IsInRole("0") || User.IsInRole("3=2"))
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $("#ImportThongTinEPI").click(function () {
+                    loadPanel.show();
+                    var files = $("#UploadedFile").get(0).files;
+                    var formData = new FormData();
+                    formData.append('importFile', files[0]);
+                    formData.append('__RequestVerificationToken', $('input[name="__RequestVerificationToken"]').val());
+                    $.ajax({
+                        url: '/LenhRaiHang/ImportFileExcel',
+                        type: "POST",
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function (rs) {
+                            loadPanel.hide();
+                            if (rs.code == 1) {
+                                showtoast(rs.text, 'success');
+                                $('#modal').modal('hide');
+                                Refresh();
+                            }
+                            else {
+
+                                showtoast(rs.text, 'error');
+
+                            }
+                        },
+                        error: function (err) {
+                            loadPanel.hide();
+                            toastr.error("Lỗi hệ thống liên hệ nhà quản trị để được hỗ trợ");
+                        }
+                    });
+                });
+                $("#btnXuatFileMau").click(function () {
+                    XuatFileMau();
+                });
+            });
+        </script>
+    }
+    @if (User.IsInRole("0"))
+    {
+        <script>
+            $(document).ready(function () {
+                $("#btnXoa").click(function () {
+                    soepi = $("#txt-soepi").dxTextBox("instance").option('value');
+                    if (soepi == null || soepi.trim() == "") {
+                        alert("Chua nhập số EPI không thể xóa");
+                        return;
+                    }
+                    if (!confirm("Bạn có muốn xóa số EPI đang chọn. Xóa là không khôi phục lại được OK để xóa")) {
+                        return;
+                    }
+                    var data = {};
+                    data.SoEPI = soepi;
+                    data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+                     $.post('@Url.Action("DelAll", "LenhRaiHang")', data).done(function (rs) {
+                    if (rs.code == "1") {
+                        showtoast(rs.text, 'success');
+                        soepi = null;
+                        Refresh();
+                    }
+                    else {
+                        showtoast(rs.text, 'error');
+                    }
+                    }).fail(function() {
+
+                    });
+                });
+            });
+        </script>
+    }
+}
